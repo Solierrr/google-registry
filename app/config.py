@@ -20,10 +20,7 @@ class Settings(BaseSettings):
     environment: str = "dev"
     log_level: str = "INFO"
 
-    # Postgres — usado só para o cache de responses Google
-    database_url: str = Field(..., repr=False)
-
-    # Maps Platform: uma chave cobre Places, Geocoding, Address Validation, Routes e Solar
+    # Maps Platform-> uma api key fornece Places, Geocoding, Address Validation, Routes e Solar
     google_key_maps: str = Field(..., repr=False)
 
     # Cloud Translation
@@ -34,12 +31,13 @@ class Settings(BaseSettings):
     google_calendar_oauth_client_secret: str = Field(..., repr=False)
     google_calendar_oauth_redirect_uri: str
 
-    # Chave de criptografia dos tokens do Calendar armazenados em `calendar_technician_tokens`
-    calendar_token_encryption_key: str = Field(..., repr=False)
-
-    # Validação do JWT RS256 de usuário 
+    # Validação do JWT RS256 de usuário
     jwt_jwks_url: str = "http://localhost:8081/.well-known/jwks.json"
     jwt_issuer: str = "solaria-auth"
+
+    # repos Solier chamados via HTTP
+    persistence_base_url: str
+    auth_base_url: str
 
 
 @lru_cache
