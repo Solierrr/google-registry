@@ -168,6 +168,7 @@ class GoogleHttpClient:
                 f"Requisição inválida para {self._capability} (HTTP 400)",
                 capability=self._capability,
                 status_code=status,
+                reason=self._extract_reason(response),
             )
         if status == 404:
             raise GoogleNotFoundException(
@@ -190,6 +191,23 @@ class GoogleHttpClient:
                 status_code=status,
             )
         return response
+
+    @staticmethod
+    def _extract_reason(response: httpx.Response) -> str | None:
+        """Extrai o campo `error` do corpo de um HTTP 400, se houver
+        """
+        try:
+            body = response.json()
+        except ValueError:
+            return None
+        if not isinstance(body, dict):
+            return None
+        error = body.get("error")
+        if isinstance(error, str):
+            return error
+        if isinstance(error, dict) and isinstance(error.get("status"), str):
+            return error["status"]
+        return None
 
     async def _sleep_backoff(self, attempt: int) -> None:
         # calculo de espera para retry

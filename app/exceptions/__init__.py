@@ -19,10 +19,14 @@ class GoogleProviderException(Exception):
     #: Valor de `error.type` nas métricas desta exception
     error_type: str = "unknown"
 
-    def __init__(self, message: str, *, capability: str, status_code: int | None = None) -> None:
+    def __init__(
+        self, message: str, *, capability: str, status_code: int | None = None, reason: str | None = None
+    ) -> None:
         super().__init__(message)
         self.capability = capability
         self.status_code = status_code
+        #: Motivo estruturado devolvido pelo Google 
+        self.reason = reason
 
     def details(self) -> dict[str, Any] | None:
         """Detalhes estruturados para o payload da exception (`None` = sem detalhes)"""
@@ -100,3 +104,56 @@ class CalendarTokenRevokedException(GoogleProviderException):
 
     def details(self) -> dict[str, Any]:
         return {"technician_id": self.technician_id}
+
+
+class InternalServiceException(Exception):
+    """Exceção base de erro ao chamar um serviço interno Solier (api-persistence/api-auth)
+    """
+
+    http_status: int = 502
+    #: Valor de `error.type` nas métricas desta exception
+    error_type: str = "unknown"
+
+    def __init__(self, message: str, *, service: str, status_code: int | None = None) -> None:
+        super().__init__(message)
+        self.service = service
+        self.status_code = status_code
+
+    def details(self) -> dict[str, Any] | None:
+        """Detalhes estruturados para o payload da exception (`None` = sem detalhes)"""
+        return None
+
+
+class InternalServiceValidationException(InternalServiceException):
+    """Requisição rejeitada pelo serviço interno por parâmetro obrigatório ausente ou malformado"""
+
+    http_status = 400
+    error_type = "validation"
+
+
+class InternalServiceNotFoundException(InternalServiceException):
+    """Recurso não encontrado no serviço interno"""
+
+    http_status = 404
+    error_type = "not_found"
+
+
+class InternalServiceTimeoutException(InternalServiceException):
+    """Chamada ao serviço interno excedeu o timeout configurado no client"""
+
+    http_status = 504
+    error_type = "timeout"
+
+
+class InternalServiceUnavailableException(InternalServiceException):
+    """Falha do lado do serviço interno (rede ou 5xx) após as tentativas de retry"""
+
+    http_status = 503
+    error_type = "unavailable"
+
+
+class InternalServiceUpstreamException(InternalServiceException):
+    """Fallback para erro do serviço interno não mapeado -> status HTTP inesperado (ex.: 401/403/429)"""
+
+    http_status = 502
+    error_type = "upstream"
