@@ -17,10 +17,14 @@ _SERVICE_NAME = "google-registry"
 _configured = False
 
 
-def configure_tracing(app: FastAPI) -> None:
-    """Configura o `TracerProvider` global, instrumenta FastAPI/httpx e registra o exporter OTLP
-
+def instrument_fastapi(app: FastAPI) -> None:
+    """Instrumenta a aplicação FastAPI
     """
+    FastAPIInstrumentor.instrument_app(app)
+
+
+def configure_tracing(app: FastAPI) -> None:
+    """Configura o `TracerProvider` global, instrumenta o httpx e registra o exporter OTLP"""
     global _configured
     if _configured:
         return
@@ -30,7 +34,6 @@ def configure_tracing(app: FastAPI) -> None:
     provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter()))
     trace.set_tracer_provider(provider)
 
-    FastAPIInstrumentor.instrument_app(app)
     HTTPXClientInstrumentor().instrument()
 
 
