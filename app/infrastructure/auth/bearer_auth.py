@@ -9,7 +9,7 @@ from jose import jwt
 from jose.exceptions import JOSEError
 
 from app.config import Settings, get_settings
-from app.infrastructure.auth.jwks_client import JwksClient, get_jwks_client
+from app.infrastructure.auth.jwks_client import JwksClient, JwksUnavailableError, get_jwks_client
 
 _ACCESS_TOKEN_TYPE = "access"
 
@@ -32,8 +32,9 @@ async def require_authenticated_user(
         id do user autenticado
 
     Raises:
-        HTTPException: 401 
-            motivos:
+        HTTPException:
+        503 se o JWK Set do api-auth estiver indisponível
+        401 se:
                 token ausente; 
                 token malformado; 
                 sem `kid`; 
@@ -54,7 +55,12 @@ async def require_authenticated_user(
     if kid is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Token de autenticação sem identificador de chave (kid)")
 
-    key = await jwks_client.get_key(kid)
+    try:
+        key = await jwks_client.get_key(kid)
+    except JwksUnavailableError as exc:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE, "Serviço de autenticação indisponível"
+        ) from exc
     if key is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Token de autenticação com chave desconhecida")
 
@@ -64,6 +70,7 @@ async def require_authenticated_user(
             key,
             algorithms=["RS256"],
             issuer=settings.jwt_issuer,
+            options={"require_exp": True},
         )
     except JOSEError as exc:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Token de autenticação inválido ou expirado") from exc
