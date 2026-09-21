@@ -120,34 +120,61 @@ class InternalHttpClient:
                 response = await self._client.request(method, url, **kwargs)
             except httpx.TimeoutException as exc:
                 last_error = exc
-                # ConnectTimeout retenta independente
-                connect_phase = isinstance(exc, httpx.ConnectTimeout)
-                if (not retry_on_status and not connect_phase) or attempt == _MAX_ATTEMPTS:
-                    raise InternalServiceTimeoutException(
-                        f"Timeout ao chamar {self._service}", service=self._service
-                    ) from exc
-                await self._sleep_backoff(attempt)
+                await self._retry_after_timeout(exc, attempt, retry_on_status)
                 continue
             except httpx.TransportError as exc:
                 last_error = exc
-                # ConnectError retenta independente
-                connect_phase = isinstance(exc, httpx.ConnectError)
-                if (not retry_on_status and not connect_phase) or attempt == _MAX_ATTEMPTS:
-                    raise InternalServiceUnavailableException(
-                        f"Falha de rede ao chamar {self._service}", service=self._service
-                    ) from exc
-                await self._sleep_backoff(attempt)
+                await self._retry_after_transport_error(exc, attempt, retry_on_status)
                 continue
 
-            retryable = response.status_code in _RETRYABLE_STATUS_CODES and retry_on_status
-            if not retryable or attempt == _MAX_ATTEMPTS:
-                return self._raise_for_non_retryable(response)
-
-            await self._sleep_backoff(attempt)
+            if self._should_retry_response(response, attempt, retry_on_status):
+                await self._sleep_backoff(attempt)
+                continue
+            return self._raise_for_non_retryable(response)
 
         raise InternalServiceUnavailableException(
             f"Falha ao chamar {self._service} após {_MAX_ATTEMPTS} tentativas", service=self._service
         ) from last_error
+
+    async def _retry_after_timeout(
+        self, exc: httpx.TimeoutException, attempt: int, retry_on_status: bool
+    ) -> None:
+        """Decide se um timeout deve ser repetido ou virar exceção´
+        
+        """
+        connect_phase = isinstance(exc, httpx.ConnectTimeout)
+        if self._should_stop_retry(retry_on_status, connect_phase, attempt):
+            raise InternalServiceTimeoutException(
+                f"Timeout ao chamar {self._service}", service=self._service
+            ) from exc
+        await self._sleep_backoff(attempt)
+
+    async def _retry_after_transport_error(
+        self, exc: httpx.TransportError, attempt: int, retry_on_status: bool
+    ) -> None:
+        """Decide se um erro de transporte deve ser repetido ou convertido em exceção."""
+        connect_phase = isinstance(exc, httpx.ConnectError)
+        if self._should_stop_retry(retry_on_status, connect_phase, attempt):
+            raise InternalServiceUnavailableException(
+                f"Falha de rede ao chamar {self._service}", service=self._service
+            ) from exc
+        await self._sleep_backoff(attempt)
+
+    @staticmethod
+    def _should_stop_retry(retry_on_status: bool, connect_phase: bool, attempt: int) -> bool:
+        """Mantém a regra original para falhas sem retry de status"""
+        return (not retry_on_status and not connect_phase) or attempt == _MAX_ATTEMPTS
+
+    @staticmethod
+    def _should_retry_response(
+        response: httpx.Response, attempt: int, retry_on_status: bool
+    ) -> bool:
+        """Retorna se a resposta ainda pode ser repetida"""
+        return (
+            response.status_code in _RETRYABLE_STATUS_CODES
+            and retry_on_status
+            and attempt != _MAX_ATTEMPTS
+        )
 
     def _raise_for_non_retryable(self, response: httpx.Response) -> httpx.Response:
         status = response.status_code
