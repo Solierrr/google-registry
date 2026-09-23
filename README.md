@@ -1,6 +1,6 @@
 # google-registry
 
-O `google-registry` é, pelo nome do repositório e pelas chaves já scaffoldadas no `.env.example` (`GOOGLE_TRANSLATE_API_KEY`, `GOOGLE_MAPS_API_KEY`, `GOOGLE_CALENDAR_API_KEY`), provavelmente um serviço destinado a centralizar a integração com APIs do Google — Translate, Maps e Calendar — para que outros serviços da organização consumam essas capacidades por trás de um ponto único, em vez de cada repositório configurar suas próprias credenciais Google. **Essa descrição é uma inferência a partir do scaffold existente, não um fato confirmado em código**: o repositório ainda não possui nenhuma linha de lógica de aplicação. Não há arquivos `.py`, não há definição de rotas, não há cliente HTTP configurado para nenhuma das três APIs. O que existe hoje é só o esqueleto de containerização (`Dockerfile`) e o contrato de variáveis de ambiente esperado (`.env.example`).
+O `google-registry` é o serviço central de integração com APIs do Google da organização (Solar, Maps, Translate, Calendar), consumido internamente por `api-core`/`api-auth` em vez de cada repositório configurar suas próprias credenciais Google.
 
 <p>
 
@@ -17,7 +17,7 @@ O `google-registry` é, pelo nome do repositório e pelas chaves já scaffoldada
 
 <p>
   <a href="https://github.com/syvixor/skills-icons">
-    <img src="https://skills.syvixor.com/api/icons?i=python,googlecloud,docker" height="48" alt="Stack do Projeto">
+    <img src="https://skills.syvixor.com/api/icons?i=python,fastapi,googlecloud,docker" height="48" alt="Stack do Projeto">
   </a>
 </p>
 
@@ -25,10 +25,12 @@ O `google-registry` é, pelo nome do repositório e pelas chaves já scaffoldada
 
 ## Status
 
-- **Scaffold de container**, existe um `Dockerfile` baseado em `python:latest` que expõe a porta `8000`, mas depende de um `requirements.txt` que ainda não foi criado — o build da imagem falha hoje, veja detalhes em [ARCHITECTURE.md](./ARCHITECTURE.md).
-- **Contrato de variáveis de ambiente**, o `.env.example` já define as três chaves de API do Google esperadas pelo serviço, mesmo sem código que as consuma ainda.
-- **Sem código-fonte Python**, nenhum arquivo `.py`, nenhum framework web escolhido, nenhum endpoint implementado. {a confirmar} qual framework (FastAPI, Flask, etc.) será usado.
-- **Licença MIT** já definida em [LICENSE](./LICENSE), sob copyright da Solaria.
+- **FastAPI**, arquitetura em camadas (`domain`/`application`/`infrastructure`/`api`), um módulo por capability.
+- **Capability `solar`**, viabilidade solar de um telhado via Solar API do Google, com gravação opcional do perfil em `api-core`.
+- **Capability `i18n`**, detecção de idioma + tradução automática (Cloud Translation API) de campos de texto inseridos em `api-core`, gravada de volta lá.
+- **Autenticação**, JWT RS256 de usuário validado via JWKS do `api-auth` (`app/infrastructure/auth`).
+- **Observabilidade**, logging/tracing/metrics via OpenTelemetry.
+- **Licença MIT**, sob copyright da Solaria.
 
 ## Aprofunde-se no Projeto!
 
@@ -37,4 +39,4 @@ O `google-registry` é, pelo nome do repositório e pelas chaves já scaffoldada
 
 ## Contribuindo
 
-- {a confirmar}, este repositório ainda não possui `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md` ou `SECURITY.md` — consulte os templates em [docs-warehouse](https://github.com/Solierrr/docs-warehouse) para criá-los quando o código-fonte começar a ser implementado.
+- {a confirmar}, este repositório ainda não possui `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md` ou `SECURITY.md` — consulte os templates em [docs-warehouse](https://github.com/Solierrr/docs-warehouse) para criá-los.
