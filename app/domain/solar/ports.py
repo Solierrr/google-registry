@@ -1,6 +1,4 @@
-"""Contrato da capability de Solar esperado
-
-"""
+"""Contrato da capability de Solar esperado"""
 
 from typing import Protocol
 

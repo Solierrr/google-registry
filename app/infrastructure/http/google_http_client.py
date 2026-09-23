@@ -53,23 +53,21 @@ class GoogleHttpClient:
         )
         self._tracer = get_tracer()
 
-    async def request(
-        self, method: str, url: str, *, retry: bool | None = None, **kwargs: Any
-    ) -> httpx.Response:
-        """Executa a requisição com retry/backoff, span e métricas 
+    async def request(self, method: str, url: str, *, retry: bool | None = None, **kwargs: Any) -> httpx.Response:
+        """Executa a requisição com retry/backoff, span e métricas
 
         Args:
             method: método HTTP (GET/POST/PATCH/DELETE)
             url: path relativo ao `base_url` da capability
-            retry: 
+            retry:
                 `true` força retry
-                `false` desliga o retry para 429/5xx 
+                `false` desliga o retry para 429/5xx
                 `None` realiza retry para métodos idempotentes
-                 Falha de conexão pré-envio sempre tem retry 
-            **kwargs: parametros extras 
+                 Falha de conexão pré-envio sempre tem retry
+            **kwargs: parametros extras
 
         Returns:
-            A resposta HTTP em caso de sucesso (2xx) ou de erro sem retry (400/401/403/404) 
+            A resposta HTTP em caso de sucesso (2xx) ou de erro sem retry (400/401/403/404)
             a interpretação do response é escopo do adapter
 
         Raises:
@@ -93,10 +91,10 @@ class GoogleHttpClient:
         ) as span:
             try:
                 response = await self._request_with_retry(
-                    method, # GET, POST, PUT, DELETE...
-                    url, # URL da API google
-                    retry_on_status=retry_on_status, # [GET, PUT, DELETE]
-                    **kwargs # headers, params...
+                    method,  # GET, POST, PUT, DELETE...
+                    url,  # URL da API google
+                    retry_on_status=retry_on_status,  # [GET, PUT, DELETE]
+                    **kwargs,  # headers, params...
                 )
                 status_code = response.status_code
                 span.set_attribute("http.response.status_code", status_code)
@@ -194,8 +192,7 @@ class GoogleHttpClient:
 
     @staticmethod
     def _extract_reason(response: httpx.Response) -> str | None:
-        """Extrai o campo `error` do corpo de um HTTP 400, se houver
-        """
+        """Extrai o campo `error` do corpo de um HTTP 400, se houver"""
         try:
             body = response.json()
         except ValueError:

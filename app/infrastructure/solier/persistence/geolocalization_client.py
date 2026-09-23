@@ -1,6 +1,6 @@
 """Cliente HTTP do endereço/geolocalização de um `place_id`, hospedados em `api-persistence`
 
-Grava (`PUT /internal/geolocalizations/place-id/{placeId}`) o endereço consultado no google é salvo 
+Grava (`PUT /internal/geolocalizations/place-id/{placeId}`) o endereço consultado no google é salvo
 no BD (`Address`/`Geolocalization`), serve como um cache para consulta nas APIs google
 """
 
@@ -38,8 +38,7 @@ class GeolocalizationHttpClient:
         state: str | None = None,
         postal_code: str | None = None,
     ) -> None:
-        """Grava (ou atualiza) o endereço/geolocalização do `place_id` em `api-persistence`
-        """
+        """Grava (ou atualiza) o endereço/geolocalização do `place_id` em `api-persistence`"""
         try:
             await self._http_client.request(
                 "PUT",

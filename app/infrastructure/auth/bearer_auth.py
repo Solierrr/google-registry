@@ -1,5 +1,4 @@
-"""Dependency FastAPI que valida o JWT RS256 de usuário emitido pelo `api-auth` 
-"""
+"""Dependency FastAPI que valida o JWT RS256 de usuário emitido pelo `api-auth`"""
 
 from typing import Annotated
 
@@ -35,13 +34,13 @@ async def require_authenticated_user(
         HTTPException:
         503 se o JWK Set do api-auth estiver indisponível
         401 se:
-                token ausente; 
-                token malformado; 
-                sem `kid`; 
-                token expirado; 
-                assinatura inválida; 
-                `kid`/`iss` desconhecidos; 
-                não é um access token; 
+                token ausente;
+                token malformado;
+                sem `kid`;
+                token expirado;
+                assinatura inválida;
+                `kid`/`iss` desconhecidos;
+                não é um access token;
     """
     if credentials is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Token de autenticação ausente")
@@ -58,9 +57,7 @@ async def require_authenticated_user(
     try:
         key = await jwks_client.get_key(kid)
     except JwksUnavailableError as exc:
-        raise HTTPException(
-            status.HTTP_503_SERVICE_UNAVAILABLE, "Serviço de autenticação indisponível"
-        ) from exc
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "Serviço de autenticação indisponível") from exc
     if key is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Token de autenticação com chave desconhecida")
 

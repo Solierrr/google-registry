@@ -40,21 +40,17 @@ class PersistenceUnitClient:
         self._http_client = http_client
 
     async def attach_address_by_place_id(self, unit_id: str, place_id: str) -> None:
-        """Vincula a unidade ao endereço/geolocalização já resolvido para `place_id`.
-
-        """
+        """Vincula a unidade ao endereço/geolocalização já resolvido para `place_id`."""
         try:
             await self._http_client.request(
                 "PUT",
-                f"/internal/local-units/{quote(unit_id, safe='')}"
-                f"/address-by-place-id/{quote(place_id, safe='')}",
+                f"/internal/local-units/{quote(unit_id, safe='')}/address-by-place-id/{quote(place_id, safe='')}",
             )
         except InternalServiceException:
             _log.warning("Falha ao vincular unidade %s ao place_id %s em api-persistence", unit_id, place_id)
 
     async def upsert_solar_profile(self, unit_id: str, viability: SolarViability) -> None:
-        """Grava (ou atualiza) o perfil solar da unidade em `api-persistence`
-        """
+        """Grava (ou atualiza) o perfil solar da unidade em `api-persistence`"""
         try:
             await self._http_client.request(
                 "PUT",

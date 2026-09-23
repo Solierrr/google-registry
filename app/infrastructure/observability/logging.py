@@ -1,9 +1,9 @@
-"""Configuração de logging (OpenTelemetry) 
+"""Configuração de logging (OpenTelemetry)
 
 destinos: CONSOLE + OTEL
 
 * **console** -> dev(local)
-* **OTLP** -> cada log exportado para o OpenTelemetry Collector 
+* **OTLP** -> cada log exportado para o OpenTelemetry Collector
 
 Sem Collector rodando o export falha em silêncio e a aplicação continua
 """
@@ -52,9 +52,7 @@ def configure_logging(level: str = "INFO") -> None:
 
 
 def attach_otel_to_uvicorn() -> None:
-    """Anexa o OTEL handler aos loggers do uvicorn (request/access logs -> OTLP)
-
-    """
+    """Anexa o OTEL handler aos loggers do uvicorn (request/access logs -> OTLP)"""
     if _otel_handler is None:
         return
     for name in _UVICORN_LOGGERS:

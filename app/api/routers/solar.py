@@ -1,5 +1,4 @@
-"""Endpoints de viabilidade solar (`/v1/solar/...`)
-"""
+"""Endpoints de viabilidade solar (`/v1/solar/...`)"""
 
 from typing import Annotated
 from uuid import UUID
@@ -36,7 +35,7 @@ async def get_roof_viability(
 ) -> SolarViability:
     """Consulta a viabilidade solar do telhado mais próximo da coordenada informada.
 
-    Toda chamada consulta a Solar API do Google 
+    Toda chamada consulta a Solar API do Google
     Com `unit_id`, o resultado também é gravado como perfil solar da unidade em api-persistence
 
     Args:

@@ -85,7 +85,7 @@ def record_internal_request(
     """Registra uma chamada a um serviço interno Solier concluída nas duas métricas
 
     Args:
-        service: nome do serviço interno chamado 
+        service: nome do serviço interno chamado
         duration_seconds: tempo total da chamada, incluindo retries
         status_code: status HTTP da resposta (ausente em timeout/erro de rede)
         error_type: valor de `error.type` se a chamada falhou, ou `None` se teve sucesso

@@ -1,7 +1,7 @@
 """DTOs públicos da capability de Solar (`/v1/solar/...`).
 
 Expostos pelo router
-transformação de dados Google -> ambiente Solier acontece 
+transformação de dados Google -> ambiente Solier acontece
 em `app.infrastructure.google.solar.adapter`
 """
 
@@ -17,13 +17,16 @@ class RoofSegment(BaseModel):
 
 
 class SolarViability(BaseModel):
-    """Viabilidade solar do telhado mais próximo da coordenada consultada
-    """
+    """Viabilidade solar do telhado mais próximo da coordenada consultada"""
 
     imagery_date: str = Field(..., description="Data da imageria usada na análise, no formato YYYY-MM-DD")
-    usable_roof_area_m2: float = Field(..., description="Área total do telhado utilizável para painéis, em metros quadrados")
+    usable_roof_area_m2: float = Field(
+        ..., description="Área total do telhado utilizável para painéis, em metros quadrados"
+    )
     max_panel_count: int = Field(..., description="Quantidade máxima de painéis solares que cabem no telhado")
-    annual_sunshine_hours: float = Field(..., description="Máximo de horas de sol direto por ano estimadas para o telhado")
+    annual_sunshine_hours: float = Field(
+        ..., description="Máximo de horas de sol direto por ano estimadas para o telhado"
+    )
     carbon_offset_factor_kg_mwh: float = Field(
         ..., description="Fator de compensação de carbono, em kg de CO2 por MWh gerado"
     )

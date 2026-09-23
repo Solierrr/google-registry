@@ -1,4 +1,4 @@
-"""Cliente HTTP compartilhado para chamadas aos serviços internos Solier 
+"""Cliente HTTP compartilhado para chamadas aos serviços internos Solier
 
 Concentra:
 - timeout
@@ -50,9 +50,7 @@ class InternalHttpClient:
         )
         self._tracer = get_tracer()
 
-    async def request(
-        self, method: str, url: str, *, retry: bool | None = None, **kwargs: Any
-    ) -> httpx.Response:
+    async def request(self, method: str, url: str, *, retry: bool | None = None, **kwargs: Any) -> httpx.Response:
         """Executa a requisição com retry/backoff, span e métricas
 
         Args:
@@ -136,17 +134,11 @@ class InternalHttpClient:
             f"Falha ao chamar {self._service} após {_MAX_ATTEMPTS} tentativas", service=self._service
         ) from last_error
 
-    async def _retry_after_timeout(
-        self, exc: httpx.TimeoutException, attempt: int, retry_on_status: bool
-    ) -> None:
-        """Decide se um timeout deve ser repetido ou virar exceção´
-        
-        """
+    async def _retry_after_timeout(self, exc: httpx.TimeoutException, attempt: int, retry_on_status: bool) -> None:
+        """Decide se um timeout deve ser repetido ou virar exceção´"""
         connect_phase = isinstance(exc, httpx.ConnectTimeout)
         if self._should_stop_retry(retry_on_status, connect_phase, attempt):
-            raise InternalServiceTimeoutException(
-                f"Timeout ao chamar {self._service}", service=self._service
-            ) from exc
+            raise InternalServiceTimeoutException(f"Timeout ao chamar {self._service}", service=self._service) from exc
         await self._sleep_backoff(attempt)
 
     async def _retry_after_transport_error(
@@ -166,15 +158,9 @@ class InternalHttpClient:
         return (not retry_on_status and not connect_phase) or attempt == _MAX_ATTEMPTS
 
     @staticmethod
-    def _should_retry_response(
-        response: httpx.Response, attempt: int, retry_on_status: bool
-    ) -> bool:
+    def _should_retry_response(response: httpx.Response, attempt: int, retry_on_status: bool) -> bool:
         """Retorna se a resposta ainda pode ser repetida"""
-        return (
-            response.status_code in _RETRYABLE_STATUS_CODES
-            and retry_on_status
-            and attempt != _MAX_ATTEMPTS
-        )
+        return response.status_code in _RETRYABLE_STATUS_CODES and retry_on_status and attempt != _MAX_ATTEMPTS
 
     def _raise_for_non_retryable(self, response: httpx.Response) -> httpx.Response:
         status = response.status_code

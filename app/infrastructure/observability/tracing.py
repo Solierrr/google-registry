@@ -18,8 +18,7 @@ _configured = False
 
 
 def instrument_fastapi(app: FastAPI) -> None:
-    """Instrumenta a aplicação FastAPI
-    """
+    """Instrumenta a aplicação FastAPI"""
     FastAPIInstrumentor.instrument_app(app)
 
 

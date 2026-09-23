@@ -25,7 +25,7 @@ class GoogleProviderException(Exception):
         super().__init__(message)
         self.capability = capability
         self.status_code = status_code
-        #: Motivo estruturado devolvido pelo Google 
+        #: Motivo estruturado devolvido pelo Google
         self.reason = reason
 
     def details(self) -> dict[str, Any] | None:
@@ -34,14 +34,14 @@ class GoogleProviderException(Exception):
 
 
 class GoogleAuthenticationException(GoogleProviderException):
-    """api key google inválida | erro de config """
+    """api key google inválida | erro de config"""
 
     http_status = 502
     error_type = "authentication"
 
 
 class GoogleAuthorizationException(GoogleProviderException):
-    """sem permissão ou consentimento para operação """
+    """sem permissão ou consentimento para operação"""
 
     http_status = 502
     error_type = "authorization"
@@ -62,21 +62,21 @@ class GoogleValidationException(GoogleProviderException):
 
 
 class GoogleNotFoundException(GoogleProviderException):
-    """dado não encontrado pelo Google """
+    """dado não encontrado pelo Google"""
 
     http_status = 404
     error_type = "not_found"
 
 
 class GoogleTimeoutException(GoogleProviderException):
-    """chamda pelo google excedeu o timeout configurado no client """
+    """chamda pelo google excedeu o timeout configurado no client"""
 
     http_status = 504
     error_type = "timeout"
 
 
 class GoogleUnavailableException(GoogleProviderException):
-    """falha do lado do Google após as tentativas de retry """
+    """falha do lado do Google após as tentativas de retry"""
 
     http_status = 503
     error_type = "unavailable"
@@ -107,8 +107,7 @@ class CalendarTokenRevokedException(GoogleProviderException):
 
 
 class InternalServiceException(Exception):
-    """Exceção base de erro ao chamar um serviço interno Solier (api-persistence/api-auth)
-    """
+    """Exceção base de erro ao chamar um serviço interno Solier (api-persistence/api-auth)"""
 
     http_status: int = 502
     #: Valor de `error.type` nas métricas desta exception

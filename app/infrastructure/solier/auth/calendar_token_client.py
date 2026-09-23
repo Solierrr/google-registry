@@ -65,7 +65,7 @@ class AuthCalendarTokenClient:
         """Persiste (em `api-auth`) o par de tokens do técnico
 
         Raises:
-            InternalServiceException: falha ao gravar 
+            InternalServiceException: falha ao gravar
         """
         await self._http_client.request(
             "PUT",
@@ -74,8 +74,7 @@ class AuthCalendarTokenClient:
         )
 
     async def disconnect(self, technician_id: str) -> None:
-        """Marca a conexão do técnico como desconectada em `api-auth`
-        """
+        """Marca a conexão do técnico como desconectada em `api-auth`"""
         try:
             await self._http_client.request("DELETE", self._token_path(technician_id))
         except InternalServiceNotFoundException:

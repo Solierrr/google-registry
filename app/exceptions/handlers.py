@@ -19,7 +19,7 @@ async def _google_provider_exception_handler(request: Request, exc: Exception) -
     assert isinstance(exc, GoogleProviderException)
     status_code = exc.http_status
     # Toda exceção tratada gera log correlacionado ao trace:
-    # 5xx -> ERROR com stack 
+    # 5xx -> ERROR com stack
     # 4xx -> WARNING só com a mensagem
     if status_code >= 500:
         _log.error("Falha %d em %s %s", status_code, request.method, request.url.path, exc_info=exc)
@@ -33,17 +33,13 @@ async def _google_provider_exception_handler(request: Request, exc: Exception) -
 
 
 async def _internal_service_exception_handler(request: Request, exc: Exception) -> JSONResponse:
-    # handler invocado apenas para InternalServiceException 
+    # handler invocado apenas para InternalServiceException
     assert isinstance(exc, InternalServiceException)
     status_code = exc.http_status
     if status_code >= 500:
-        _log.error(
-            "Falha %d em %s %s (serviço interno)", status_code, request.method, request.url.path, exc_info=exc
-        )
+        _log.error("Falha %d em %s %s (serviço interno)", status_code, request.method, request.url.path, exc_info=exc)
     else:
-        _log.warning(
-            "Erro %d em %s %s (serviço interno): %s", status_code, request.method, request.url.path, exc
-        )
+        _log.warning("Erro %d em %s %s (serviço interno): %s", status_code, request.method, request.url.path, exc)
     body: dict[str, object] = {"code": type(exc).__name__, "message": str(exc)}
     details = exc.details()
     if details is not None:
@@ -52,8 +48,7 @@ async def _internal_service_exception_handler(request: Request, exc: Exception) 
 
 
 async def _unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
-    """handler para execções não mapeadas
-    """
+    """handler para execções não mapeadas"""
     _log.error("Falha 500 não tratada em %s %s", request.method, request.url.path, exc_info=exc)
     return JSONResponse(
         status_code=500,

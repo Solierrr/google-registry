@@ -17,15 +17,13 @@ class SolarService:
         self._port = port
         self._unit_client = unit_client
 
-    async def get_roof_viability(
-        self, latitude: float, longitude: float, unit_id: str | None = None
-    ) -> SolarViability:
+    async def get_roof_viability(self, latitude: float, longitude: float, unit_id: str | None = None) -> SolarViability:
         """Consulta a viabilidade solar da coordenada no Google
 
         Args:
             latitude: latitude do ponto a consultar
             longitude: longitude do ponto a consultar
-            unit_id: se informado, grava o resultado como perfil solar da `LocalUnit` em api-persistence 
+            unit_id: se informado, grava o resultado como perfil solar da `LocalUnit` em api-persistence
         Returns:
             A viabilidade solar do telhado mais próximo
 

@@ -18,8 +18,7 @@ _log = logging.getLogger("google_registry.auth.jwks")
 
 
 class JwksUnavailableError(Exception):
-    """O JWK Set não pôde ser obtido e o `kid` do token não está em cache
-    """
+    """O JWK Set não pôde ser obtido e o `kid` do token não está em cache"""
 
 
 class JwksClient:
