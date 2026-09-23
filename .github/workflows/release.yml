@@ -1,0 +1,11 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    uses: Solierrr/.github/.github/workflows/docker-publish.yml@main
+    secrets: inherit
