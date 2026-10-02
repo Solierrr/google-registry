@@ -16,6 +16,19 @@ class RoofSegment(BaseModel):
     area_m2: float = Field(..., description="Área aproveitável do segmento, em metros quadrados")
 
 
+class SolarPanelConfig(BaseModel):
+    """Uma configuração candidata de arranjo de painéis, com a produção anual estimada para ela
+
+    A quantidade de painéis é de painéis de referência do Google (`panel_capacity_watts`);
+    quem usa outro painel precisa converter a energia pela potência.
+    """
+
+    panels_count: int = Field(..., description="Quantidade de painéis de referência nesta configuração")
+    yearly_energy_dc_kwh: float = Field(
+        ..., description="Energia DC anual estimada para esta configuração, em kWh, antes de perdas do sistema"
+    )
+
+
 class SolarViability(BaseModel):
     """Viabilidade solar do telhado mais próximo da coordenada consultada"""
 
@@ -32,4 +45,17 @@ class SolarViability(BaseModel):
     )
     roof_segments: list[RoofSegment] = Field(
         ..., description="Planos identificados no telhado, cada um com sua inclinação, orientação e área"
+    )
+    panel_capacity_watts: float | None = Field(
+        default=None, description="Potência do painel de referência do Google, em watts (nulo se o Google não informa)"
+    )
+    panel_width_meters: float | None = Field(
+        default=None, description="Largura do painel de referência, em metros (nulo se o Google não informa)"
+    )
+    panel_height_meters: float | None = Field(
+        default=None, description="Altura do painel de referência, em metros (nulo se o Google não informa)"
+    )
+    panel_configs: list[SolarPanelConfig] = Field(
+        default_factory=list,
+        description="Configurações candidatas de painéis e energia anual, na ordem do Google (vazia se não houver)",
     )
