@@ -78,3 +78,44 @@ class AddressListResponse(BaseModel):
     """Endereços encontrados, do mais relevante/específico para o menos"""
 
     results: list[Address] = Field(..., description="Endereços encontrados (vazia se nada casar)")
+
+
+Verdict = Literal["ok", "needs_review", "invalid"]
+
+
+class ValidateRequest(BaseModel):
+    """Pedido de validação de um endereço digitado à mão"""
+
+    address_lines: list[str] = Field(
+        ..., min_length=1, max_length=10, description="Linhas do endereço (rua, número, complemento...)"
+    )
+    postal_code: str | None = Field(default=None, description="CEP, se conhecido")
+    locality: str | None = Field(default=None, description="Cidade, se conhecida")
+    administrative_area: str | None = Field(default=None, description="UF, se conhecida")
+    region_code: str = Field(default="BR", description="País (ISO 3166-1 alfa-2)")
+
+
+class AddressValidation(BaseModel):
+    """Resultado da validação de um endereço"""
+
+    verdict: Verdict = Field(
+        ...,
+        description=(
+            "ok: endereço completo e confirmado; needs_review: existe, mas há componentes "
+            "não confirmados ou faltando; invalid: não foi possível validar"
+        ),
+    )
+    missing_components: list[str] = Field(
+        default_factory=list, description="Tipos de componente que faltam (ex.: street_number)"
+    )
+    unconfirmed_components: list[str] = Field(
+        default_factory=list, description="Tipos de componente que o Google não conseguiu confirmar"
+    )
+
+
+class ValidateResponse(AddressValidation):
+    """Veredito da validação e a versão normalizada do endereço"""
+
+    address: Address | None = Field(
+        default=None, description="Endereço normalizado com coordenadas (nulo se o Google não geocodificou)"
+    )

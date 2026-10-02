@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, Query
 from app.api.dependencies import get_http_client
 from app.application.address.service import AddressService
 from app.config import get_settings
+from app.infrastructure.google.address_validation.adapter import AddressValidationAdapter
 from app.infrastructure.google.geocoding.adapter import GeocodingAdapter
 from app.infrastructure.google.places.adapter import PlacesAdapter
 from app.infrastructure.http.google_http_client import GoogleHttpClient
@@ -17,6 +18,8 @@ from app.schemas.address import (
     ReverseGeocodeRequest,
     SuggestionsRequest,
     SuggestionsResponse,
+    ValidateRequest,
+    ValidateResponse,
 )
 
 router = APIRouter(prefix="/v1/address", tags=["address"])
@@ -25,11 +28,14 @@ router = APIRouter(prefix="/v1/address", tags=["address"])
 def _get_service(
     places_client: Annotated[GoogleHttpClient, Depends(get_http_client("places"))],
     geocoding_client: Annotated[GoogleHttpClient, Depends(get_http_client("geocoding"))],
+    validation_client: Annotated[GoogleHttpClient, Depends(get_http_client("address_validation"))],
 ) -> AddressService:
     """Monta o `AddressService` a partir dos clientes Google das capabilities de endereço"""
     api_key = get_settings().google_key_maps
     return AddressService(
-        PlacesAdapter(places_client, api_key=api_key), GeocodingAdapter(geocoding_client, api_key=api_key)
+        PlacesAdapter(places_client, api_key=api_key),
+        GeocodingAdapter(geocoding_client, api_key=api_key),
+        AddressValidationAdapter(validation_client, api_key=api_key),
     )
 
 
@@ -121,3 +127,23 @@ async def reverse_geocode(
         GoogleValidationException: pedido inválido / HTTP 400
     """
     return await service.reverse_geocode(request.latitude, request.longitude, language=request.language)
+
+
+@router.post("/validate", summary="Valida e normaliza um endereço digitado à mão")
+async def validate_address(
+    request: ValidateRequest,
+    service: Annotated[AddressService, Depends(_get_service)],
+) -> ValidateResponse:
+    """Valida um endereço e devolve o veredito, o que falta ou não foi confirmado e a versão normalizada.
+
+    Args:
+        request: linhas do endereço, CEP, cidade, UF e país
+        service: service com os clients google injetados
+
+    Returns:
+        O veredito (`ok`, `needs_review` ou `invalid`) e o endereço normalizado com coordenadas
+
+    Raises:
+        GoogleValidationException: pedido inválido / HTTP 400
+    """
+    return await service.validate(request)

@@ -2,7 +2,7 @@
 
 from typing import Protocol
 
-from app.schemas.address import Address, Suggestion
+from app.schemas.address import Address, Suggestion, ValidateRequest, ValidateResponse
 
 
 class PlacesPort(Protocol):
@@ -82,5 +82,24 @@ class GeocodingPort(Protocol):
             GoogleValidationException: pedido inválido
             GoogleUnavailableException: erro temporário do Google
             GoogleUpstreamException: resposta em formato inesperado
+        """
+        ...
+
+
+class AddressValidationPort(Protocol):
+    """Operações de validação de endereço esperadas"""
+
+    async def validate(self, request: ValidateRequest) -> ValidateResponse:
+        """Valida e normaliza um endereço
+
+        Args:
+            request: linhas do endereço, CEP, cidade, UF e país
+
+        Returns:
+            O veredito, os componentes faltando ou não confirmados e o endereço normalizado
+
+        Raises:
+            GoogleValidationException: pedido inválido
+            GoogleUpstreamException: resposta HTTP 200 do Google em formato inesperado
         """
         ...

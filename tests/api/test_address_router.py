@@ -114,3 +114,34 @@ def test_reverse_geocode_rejects_out_of_range_coordinates(client):
     response = client.post("/v1/address/reverse-geocode", json={"latitude": 95, "longitude": 0})
 
     assert response.status_code == 422
+
+
+VALIDATE = "https://addressvalidation.googleapis.com/v1:validateAddress"
+
+
+@respx.mock
+def test_validate_returns_verdict(client):
+    respx.post(VALIDATE).mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "result": {
+                    "verdict": {"validationGranularity": "PREMISE", "addressComplete": True},
+                    "address": {"formattedAddress": "Av. Paulista, 1000"},
+                    "geocode": {"location": {"latitude": -23.5, "longitude": -46.6}},
+                }
+            },
+        )
+    )
+
+    response = client.post("/v1/address/validate", json={"address_lines": ["Av Paulista 1000"]})
+
+    assert response.status_code == 200
+    assert response.json()["verdict"] == "ok"
+    assert response.json()["address"]["latitude"] == -23.5
+
+
+def test_validate_requires_at_least_one_address_line(client):
+    response = client.post("/v1/address/validate", json={"address_lines": []})
+
+    assert response.status_code == 422

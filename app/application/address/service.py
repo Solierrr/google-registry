@@ -3,16 +3,17 @@
 Orquestra os ports de busca de endereço
 """
 
-from app.domain.address.ports import GeocodingPort, PlacesPort
-from app.schemas.address import Address, AddressListResponse, SuggestionsResponse
+from app.domain.address.ports import AddressValidationPort, GeocodingPort, PlacesPort
+from app.schemas.address import Address, AddressListResponse, SuggestionsResponse, ValidateRequest, ValidateResponse
 
 
 class AddressService:
-    """Orquestra os provedores Google de endereço (`PlacesPort`, `GeocodingPort`)"""
+    """Orquestra os provedores Google de endereço (`PlacesPort`, `GeocodingPort`, `AddressValidationPort`)"""
 
-    def __init__(self, places: PlacesPort, geocoding: GeocodingPort) -> None:
+    def __init__(self, places: PlacesPort, geocoding: GeocodingPort, validation: AddressValidationPort) -> None:
         self._places = places
         self._geocoding = geocoding
+        self._validation = validation
 
     async def suggest(
         self, query: str, *, session_token: str | None, language: str, country: str
@@ -87,3 +88,18 @@ class AddressService:
         return AddressListResponse(
             results=await self._geocoding.reverse_geocode(latitude, longitude, language=language)
         )
+
+    async def validate(self, request: ValidateRequest) -> ValidateResponse:
+        """Valida e normaliza um endereço digitado à mão
+
+        Args:
+            request: linhas do endereço, CEP, cidade, UF e país
+
+        Returns:
+            O veredito, os componentes faltando ou não confirmados e o endereço normalizado
+
+        Raises:
+            GoogleValidationException: pedido inválido
+            GoogleUpstreamException: resposta HTTP 200 do Google em formato inesperado
+        """
+        return await self._validation.validate(request)
