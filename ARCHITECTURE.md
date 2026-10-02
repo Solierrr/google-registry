@@ -22,7 +22,7 @@ FastAPI, arquitetura em camadas por capability (`domain` -> `application` -> `in
 - **`address`**, `/v1/address/{suggestions,places/{place_id},geocode,reverse-geocode,validate,resolve}`; três adapters (Places New, Geocoding, Address Validation) atrás de um `AddressService`. `resolve` junta busca e validação; se a validação falhar, o endereço volta com `validation: null`.
 - **`solar`**, `/v1/solar/roof-viability` (`buildingInsights:findClosest`), com os dados do painel de referência do Google.
 - **`i18n`**, `/v1/i18n/translate`; detecta o idioma de origem (Cloud Translation API, `detect`) e traduz os campos para os outros dois dos três idiomas suportados (`en`/`es`/`pt`), um lote por idioma de destino.
-- **`llm`**, `/v1/llm/{keys,keys/{key_id}/report,providers}`; não chama o Google: lê do ambiente as chaves `<PROVEDOR>_API_KEY_<N>` (Gemini e Groq), mantém uma fila FIFO (`application/llm/key_pool.py`) e verifica a validade das chaves em segundo plano (`infrastructure/llm/probe.py`). Estado em memória, uma réplica.
+- **`llm`**, `/v1/llm/{keys,keys/{key_id}/report,providers}`; não chama o Google: lê do ambiente as chaves `<PROVEDOR>_API_KEY_<N>` (Gemini e Groq), exige `Authorization: Bearer <REGISTRY_CONSUMER_TOKEN>` (`infrastructure/auth/consumer_token.py`, 401 sem token, 503 se o token não estiver configurado), mantém uma fila FIFO (`application/llm/key_pool.py`) e verifica a validade das chaves em segundo plano (`infrastructure/llm/probe.py`). Estado em memória, uma réplica.
 - **`geo`**, `/v1/geo/timezone`; fuso por coordenada via `tzfpy`, sem API externa.
 
 ## Observabilidade e autenticação
