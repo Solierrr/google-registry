@@ -1,5 +1,3 @@
-"""Contrato da capability de i18n esperado"""
-
 from typing import Protocol
 
 

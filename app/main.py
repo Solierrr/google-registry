@@ -1,10 +1,3 @@
-"""Entrypoint da aplicação FastAPI do google-registry
-
-Monta o `FastAPI`, os clientes HTTP por capability/serviço interno (criados
-uma vez no lifespan e reaproveitados por request via `app.api.dependencies`)
-e a observabilidade (logging/tracing/metrics OTEL).
-"""
-
 import asyncio
 import contextlib
 import logging

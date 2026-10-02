@@ -1,8 +1,3 @@
-"""Cliente do JWK Set publicado pelo `api-auth`
-
-Cache por `kid` atualizado sob demanda
-"""
-
 import logging
 import time
 from typing import Any

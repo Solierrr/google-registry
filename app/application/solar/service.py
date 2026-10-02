@@ -1,8 +1,3 @@
-"""Serviço de aplicação da capability de Solar
-
-Orquestra o `SolarPort`
-"""
-
 from app.domain.solar.ports import SolarPort
 from app.schemas.solar import SolarViability
 

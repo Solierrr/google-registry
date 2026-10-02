@@ -1,5 +1,3 @@
-"""Testes de app.infrastructure.llm.keys.load_llm_keys"""
-
 from app.infrastructure.llm.keys import key_id_for, load_llm_keys
 
 

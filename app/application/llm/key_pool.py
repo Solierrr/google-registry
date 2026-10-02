@@ -1,11 +1,3 @@
-"""Fila FIFO de chaves de LLM
-
-Todas as chaves disponíveis ficam numa única fila, sem preferência entre provedores. Entregar uma chave
-tira a primeira elegível da fila e a recoloca no fim (rodízio). Chave que atingiu o limite de uso sai da
-fila e volta ao fim quando o descanso acaba; chave recusada pelo provedor sai até uma verificação válida.
-Nenhuma chamada de rede acontece aqui: o estado vem dos avisos dos consumidores e da verificação em segundo plano
-"""
-
 import math
 from collections import deque
 from collections.abc import Callable

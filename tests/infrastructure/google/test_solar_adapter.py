@@ -1,5 +1,3 @@
-"""Testes de app.infrastructure.google.solar.adapter.SolarAdapter"""
-
 import httpx
 import pytest
 import respx

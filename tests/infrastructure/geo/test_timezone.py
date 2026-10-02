@@ -1,5 +1,3 @@
-"""Testes de app.infrastructure.geo.timezone.TzfpyTimezoneFinder"""
-
 import pytest
 
 from app.infrastructure.geo.timezone import TzfpyTimezoneFinder

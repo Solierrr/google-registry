@@ -1,11 +1,3 @@
-"""Configuração compartilhada dos testes (fixtures e variáveis de ambiente).
-
-IMPORTANTE: as variáveis de ambiente são definidas no topo deste módulo,
-antes de qualquer import de `app`. Isso garante que os testes rodem em
-qualquer ambiente (inclusive no CI, onde não existe arquivo .env) e que
-as chaves reais do desenvolvedor nunca sejam usadas nos testes.
-"""
-
 import os
 
 os.environ["GOOGLE_KEY_MAPS"] = "test-google-key-maps"

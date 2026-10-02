@@ -1,13 +1,3 @@
-"""Configuração de logging (OpenTelemetry)
-
-destinos: CONSOLE + OTEL
-
-* **console** -> dev(local)
-* **OTLP** -> cada log exportado para o OpenTelemetry Collector
-
-Sem Collector rodando o export falha em silêncio e a aplicação continua
-"""
-
 import logging
 
 from opentelemetry._logs import set_logger_provider

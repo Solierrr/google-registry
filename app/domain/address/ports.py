@@ -1,5 +1,3 @@
-"""Contratos da capability de endereço esperados do provedor"""
-
 from typing import Protocol
 
 from app.schemas.address import Address, Suggestion, ValidateRequest, ValidateResponse

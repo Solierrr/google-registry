@@ -1,5 +1,3 @@
-"""Testes de app.application.i18n.service.TranslationService"""
-
 from unittest.mock import AsyncMock
 
 import pytest

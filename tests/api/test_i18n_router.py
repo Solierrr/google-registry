@@ -1,5 +1,3 @@
-"""Testes de POST /v1/i18n/translate"""
-
 import httpx
 import respx
 

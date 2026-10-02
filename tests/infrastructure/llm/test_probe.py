@@ -1,5 +1,3 @@
-"""Testes de app.infrastructure.llm.probe"""
-
 import asyncio
 import contextlib
 

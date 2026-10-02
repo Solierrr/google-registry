@@ -1,6 +1,3 @@
-"""Testes do entrypoint da aplicação"""
-
-
 def test_health_returns_ok(client):
     response = client.get("/health")
 

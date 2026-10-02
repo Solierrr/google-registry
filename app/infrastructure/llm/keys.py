@@ -1,9 +1,3 @@
-"""Leitura das chaves de LLM do ambiente (pasta `/llm` do Infisical, injetada como variáveis)
-
-Convenção: `<PROVEDOR>_API_KEY_<N>` (ex.: `GEMINI_API_KEY_1`, `GROQ_API_KEY_2`). Também são aceitos os nomes
-usados hoje pelos serviços de IA (`GOOGLE_API_KEY`, `GEMINI_API_KEY`, `GEMINI_API_KEY2`, `GROQ_API_KEY`...)
-"""
-
 import hashlib
 import re
 from collections.abc import Mapping

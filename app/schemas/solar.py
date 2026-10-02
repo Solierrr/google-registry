@@ -1,10 +1,3 @@
-"""DTOs públicos da capability de Solar (`/v1/solar/...`).
-
-Expostos pelo router
-transformação de dados Google -> ambiente Solier acontece
-em `app.infrastructure.google.solar.adapter`
-"""
-
 from pydantic import BaseModel, Field
 
 

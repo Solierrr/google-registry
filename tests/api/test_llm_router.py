@@ -1,5 +1,3 @@
-"""Testes de /v1/llm/..."""
-
 import pytest
 
 

@@ -1,9 +1,3 @@
-"""Traduz `GoogleProviderException` para response padronizado
-
-Formato de erro padrão: `{"code": str, "message": str, "details"?: object}`
-O status HTTP vêm  da própria exception
-"""
-
 import logging
 
 from fastapi import FastAPI, Request

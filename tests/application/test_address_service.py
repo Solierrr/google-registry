@@ -1,5 +1,3 @@
-"""Testes de app.application.address.service.AddressService"""
-
 from unittest.mock import AsyncMock
 
 from app.application.address.service import AddressService

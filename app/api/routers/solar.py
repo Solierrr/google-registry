@@ -1,5 +1,3 @@
-"""Endpoints de viabilidade solar (`/v1/solar/...`)"""
-
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query

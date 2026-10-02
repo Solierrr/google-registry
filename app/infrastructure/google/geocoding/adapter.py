@@ -1,10 +1,3 @@
-"""Adapter da Geocoding API do Google (`/maps/api/geocode/json`)
-
-Único lugar que conhece o formato de request/response do Google para esta capability
-
-A API responde HTTP 200 mesmo em erro: o resultado vem no campo `status` do corpo
-"""
-
 from typing import Any
 
 from app.domain.address.ports import GeocodingPort

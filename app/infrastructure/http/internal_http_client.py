@@ -1,16 +1,3 @@
-"""Cliente HTTP compartilhado para chamadas aos serviços internos Solier
-
-Concentra:
-- timeout
-- retry/backoff
-- tradução de status HTTP de exceptions
-- observalidade(OTLP)
-
-Estrutura idêntica a `GoogleHttpClient`
-
-`/internal/**`
-"""
-
 import asyncio
 import random
 import time

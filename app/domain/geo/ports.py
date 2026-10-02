@@ -1,5 +1,3 @@
-"""Contrato da capability de geo esperado"""
-
 from typing import Protocol
 
 

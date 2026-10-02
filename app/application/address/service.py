@@ -1,8 +1,3 @@
-"""Serviço de aplicação da capability de endereço
-
-Orquestra os ports de busca de endereço
-"""
-
 import logging
 
 from app.domain.address.ports import AddressValidationPort, GeocodingPort, PlacesPort

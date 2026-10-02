@@ -1,5 +1,3 @@
-"""DTOs públicos da capability de geo (`/v1/geo/...`)"""
-
 from pydantic import BaseModel, Field
 
 

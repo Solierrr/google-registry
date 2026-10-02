@@ -1,5 +1,3 @@
-"""Serviço de aplicação da capability de geo"""
-
 from datetime import UTC, datetime
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 

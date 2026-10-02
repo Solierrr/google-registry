@@ -1,5 +1,3 @@
-"""Testes de app.infrastructure.google.address_validation.adapter.AddressValidationAdapter"""
-
 import json
 
 import httpx

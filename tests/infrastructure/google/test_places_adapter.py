@@ -1,5 +1,3 @@
-"""Testes de app.infrastructure.google.places.adapter.PlacesAdapter"""
-
 import json
 
 import httpx

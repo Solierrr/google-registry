@@ -1,5 +1,3 @@
-"""Testes de app.application.llm.key_pool.KeyPool"""
-
 import pytest
 
 from app.application.llm.key_pool import KeyPool

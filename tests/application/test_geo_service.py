@@ -1,5 +1,3 @@
-"""Testes de app.application.geo.service.GeoService"""
-
 from datetime import UTC, datetime, timedelta, timezone
 
 from app.application.geo.service import GeoService

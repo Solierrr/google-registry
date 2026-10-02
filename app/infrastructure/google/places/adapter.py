@@ -1,8 +1,3 @@
-"""Adapter da Places API (New) do Google (`places:autocomplete` e `places/{id}`)
-
-Único lugar que conhece o formato de request/response do Google para esta capability
-"""
-
 from typing import Any
 from urllib.parse import quote
 

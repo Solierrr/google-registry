@@ -1,8 +1,3 @@
-"""Adapter da Address Validation API do Google (`v1:validateAddress`)
-
-Único lugar que conhece o formato de request/response do Google para esta capability
-"""
-
 from typing import Any
 
 from app.domain.address.ports import AddressValidationPort

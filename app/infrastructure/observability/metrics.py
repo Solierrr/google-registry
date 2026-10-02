@@ -1,10 +1,3 @@
-"""Métricas de chamadas às APIs Google
-
-intrumentos de medição|métricas:
-`_requests` -> contador de requests divido por variaveis
-`_request_duration` -> histograma de tempo de resposta das requests
-"""
-
 from opentelemetry import metrics
 from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter
 from opentelemetry.metrics import Counter, Histogram

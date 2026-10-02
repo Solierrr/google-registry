@@ -1,8 +1,3 @@
-"""Adapter da Solar API do Google (`buildingInsights:findClosest`)
-
-Único lugar que conhece o formato de request/response do Google para esta capability
-"""
-
 from typing import Any
 
 from pydantic import ValidationError

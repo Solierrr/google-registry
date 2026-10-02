@@ -1,8 +1,3 @@
-"""Mapeamento dos componentes de endereço do Google (Places e Geocoding) para os campos de `Address`
-
-Os dois formatos usam os mesmos tipos de componente (`route`, `locality`...), mudam só os nomes dos campos
-"""
-
 from collections.abc import Iterable
 
 Component = tuple[str | None, str | None]  # (nome longo, nome curto)

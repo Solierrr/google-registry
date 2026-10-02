@@ -1,5 +1,3 @@
-"""Contrato da capability de Solar esperado"""
-
 from typing import Protocol
 
 from app.schemas.solar import SolarViability

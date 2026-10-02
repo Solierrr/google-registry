@@ -1,5 +1,3 @@
-"""Provedores de LLM conhecidos: onde chamar e como autenticar"""
-
 from dataclasses import dataclass
 
 

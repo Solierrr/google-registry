@@ -1,5 +1,3 @@
-"""Fuso horário por coordenada, calculado localmente (sem API externa) com `tzfpy`"""
-
 import tzfpy
 
 from app.domain.geo.ports import TimezonePort

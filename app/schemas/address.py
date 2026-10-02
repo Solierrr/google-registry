@@ -1,10 +1,3 @@
-"""DTOs públicos da capability de endereço (`/v1/address/...`)
-
-Expostos pelo router
-transformação de dados Google -> ambiente Solier acontece nos adapters de
-`app.infrastructure.google.places`, `geocoding` e `address_validation`
-"""
-
 from typing import Literal
 
 from pydantic import BaseModel, Field, model_validator

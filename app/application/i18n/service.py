@@ -1,12 +1,3 @@
-"""Serviço de aplicação da capability de i18n
-
-Orquestra o `TranslationPort`
-
-Idiomas suportados pela plataforma: inglês (en), espanhol (es) e português (pt).
-O idioma de origem é excluído da lista de destinos - um texto nunca é
-"traduzido" para o próprio idioma.
-"""
-
 from app.domain.i18n.ports import TranslationPort
 from app.schemas.i18n import TranslatedField, TranslateResponse, TranslationField
 

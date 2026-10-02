@@ -1,8 +1,3 @@
-"""Cliente HTTP dos tokens OAuth do Calendar por técnico, hospedados em `api-auth`
-
-token OAuth não tem fallback
-"""
-
 import logging
 from dataclasses import dataclass
 from urllib.parse import quote

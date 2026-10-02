@@ -1,5 +1,3 @@
-"""Testes de GET /v1/solar/roof-viability"""
-
 import httpx
 import respx
 

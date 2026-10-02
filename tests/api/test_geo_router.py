@@ -1,6 +1,3 @@
-"""Testes de GET /v1/geo/timezone"""
-
-
 def test_timezone_returns_id_and_offset(client):
     response = client.get(
         "/v1/geo/timezone", params={"latitude": -3.1, "longitude": -60.0, "at": "2026-07-01T12:00:00Z"}

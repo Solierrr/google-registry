@@ -1,5 +1,3 @@
-"""Testes de app.infrastructure.observability.tracing"""
-
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 

@@ -1,8 +1,3 @@
-"""Configuração de tracing (OpenTelemetry)
-
-Em ambiente dev, sem collector, o export falha silenciosamente e a aplicação continua
-"""
-
 import re
 from typing import Any
 

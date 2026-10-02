@@ -1,10 +1,3 @@
-"""DTOs públicos da capability de i18n (`/v1/i18n/...`)
-
-Expostos pelo router
-transformação de dados Google -> ambiente Solier acontece
-em `app.infrastructure.google.translation.adapter`
-"""
-
 from pydantic import BaseModel, Field
 
 

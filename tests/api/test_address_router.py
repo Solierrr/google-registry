@@ -1,5 +1,3 @@
-"""Testes de /v1/address/suggestions e /v1/address/places/{place_id}"""
-
 import httpx
 import respx
 

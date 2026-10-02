@@ -1,5 +1,3 @@
-"""Testes de app.infrastructure.observability.logging"""
-
 import logging
 
 from app.infrastructure.observability import logging as logging_module

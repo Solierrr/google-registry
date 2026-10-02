@@ -1,5 +1,3 @@
-"""Dependency FastAPI que valida o JWT RS256 de usuário emitido pelo `api-auth`"""
-
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, status

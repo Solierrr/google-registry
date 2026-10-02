@@ -1,9 +1,3 @@
-"""Verificação de validade das chaves de LLM em segundo plano
-
-Uma chamada barata de listar modelos por chave. Detecta chave inválida ou revogada; não detecta cota esgotada
-(isso vem do aviso dos consumidores). Erros de rede e 429/5xx não mudam o estado da chave
-"""
-
 import asyncio
 import logging
 

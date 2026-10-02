@@ -1,5 +1,3 @@
-"""DTOs públicos da capability de chaves de LLM (`/v1/llm/...`)"""
-
 from datetime import datetime
 from typing import Literal
 

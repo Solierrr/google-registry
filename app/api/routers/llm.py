@@ -1,5 +1,3 @@
-"""Endpoints de chaves de LLM (`/v1/llm/...`)"""
-
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, Query, Response, status

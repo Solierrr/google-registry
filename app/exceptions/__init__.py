@@ -1,10 +1,3 @@
-"""Hierarquia de exceções da API
-
-Adapters traduzem erros http vindo do google para consumers internos
-
-cada classe tem um status code declarado
-"""
-
 from typing import Any
 
 

@@ -1,5 +1,3 @@
-"""Endpoints de geo (`/v1/geo/...`)"""
-
 from datetime import datetime
 from typing import Annotated
 

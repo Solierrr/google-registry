@@ -1,5 +1,3 @@
-"""Testes de app.infrastructure.google.geocoding.adapter.GeocodingAdapter"""
-
 import httpx
 import pytest
 import respx

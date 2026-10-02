@@ -1,5 +1,3 @@
-"""Testes de app.infrastructure.google.translation.adapter.TranslationAdapter"""
-
 import json
 
 import httpx

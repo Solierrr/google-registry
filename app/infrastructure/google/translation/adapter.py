@@ -1,8 +1,3 @@
-"""Adapter da Cloud Translation API do Google (v2, `detect` + `translate`)
-
-Único lugar que conhece o formato de request/response do Google para esta capability
-"""
-
 from typing import Any
 
 from app.domain.i18n.ports import TranslationPort

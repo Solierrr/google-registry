@@ -1,5 +1,3 @@
-"""Endpoints de tradução automática (`/v1/i18n/...`)"""
-
 from typing import Annotated
 
 from fastapi import APIRouter, Depends

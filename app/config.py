@@ -1,9 +1,3 @@
-"""Configuração central do google-registry, carregada de variáveis de ambiente/`.env`
-Concentra credenciais Google e parâmetros de infraestrutura
-Cada adapter Google recebe suas credenciais por está classe
-nenhum outro módulo lê variável de ambiente diretamente
-"""
-
 import os
 from collections.abc import Mapping
 from functools import lru_cache

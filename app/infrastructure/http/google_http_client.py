@@ -1,17 +1,3 @@
-"""Cliente HTTP compartilhado para chamadas a APIs Google
-
-Concentra:
-- timeout
-- retry/backoff
-- tradução de status HTTP de exceptions
-- observalidade(OTLP)
-
-Não é função dos adapters que usam esse client:
-- lógica de retry
-- tratar `httpx`
-- instrumentar chamadas maualmente
-"""
-
 import asyncio
 import random
 import time

@@ -1,10 +1,3 @@
-"""Dependências FastAPI compartilhadas
-
-Expõe clientes HTTP criados no lifespan:
-- um `GoogleHttpClient` por capability
-- um `InternalHttpClient` por serviço interno Solier
-"""
-
 from collections.abc import Callable
 from typing import Annotated
 
