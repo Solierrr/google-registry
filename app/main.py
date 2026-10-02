@@ -14,7 +14,7 @@ from typing import AsyncIterator
 
 from fastapi import FastAPI
 
-from app.api.routers import address, geo, i18n, llm, solar
+from app.api.routers import address, geo, i18n, llm, routes, solar
 from app.application.llm.key_pool import KeyPool
 from app.config import get_llm_environ, get_settings
 from app.exceptions.handlers import register_exception_handlers
@@ -31,6 +31,7 @@ _GOOGLE_BASE_URLS = {
     "address_validation": "https://addressvalidation.googleapis.com",
     "geocoding": "https://maps.googleapis.com",
     "places": "https://places.googleapis.com",
+    "routes": "https://routes.googleapis.com",
     "solar": "https://solar.googleapis.com",
     "translation": "https://translation.googleapis.com",
 }
@@ -85,6 +86,7 @@ app.include_router(solar.router)
 app.include_router(geo.router)
 app.include_router(i18n.router)
 app.include_router(llm.router)
+app.include_router(routes.router)
 
 
 @app.get("/health", tags=["health"])
