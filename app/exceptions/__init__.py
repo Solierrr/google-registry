@@ -107,7 +107,7 @@ class CalendarTokenRevokedException(GoogleProviderException):
 
 
 class InternalServiceException(Exception):
-    """Exceção base de erro ao chamar um serviço interno Solier (api-persistence/api-auth)"""
+    """Exceção base de erro ao chamar um serviço interno Solier (api-auth)"""
 
     http_status: int = 502
     #: Valor de `error.type` nas métricas desta exception

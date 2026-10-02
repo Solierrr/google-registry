@@ -13,7 +13,6 @@ os.environ["GOOGLE_KEY_TRANSLATION"] = "test-google-key-translation"
 os.environ["GOOGLE_CALENDAR_OAUTH_CLIENT_ID"] = "test-calendar-client-id"
 os.environ["GOOGLE_CALENDAR_OAUTH_CLIENT_SECRET"] = "test-calendar-client-secret"
 os.environ["GOOGLE_CALENDAR_OAUTH_REDIRECT_URI"] = "http://localhost:8000/calendar/callback"
-os.environ["PERSISTENCE_BASE_URL"] = "http://localhost:8080"
 os.environ["AUTH_BASE_URL"] = "http://localhost:8081"
 
 import pytest  # noqa: E402

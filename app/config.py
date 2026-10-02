@@ -36,7 +36,6 @@ class Settings(BaseSettings):
     jwt_issuer: str = "solaria-auth"
 
     # repos Solier chamados via HTTP
-    persistence_base_url: str
     auth_base_url: str
 
 

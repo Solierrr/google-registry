@@ -39,7 +39,7 @@ _IDEMPOTENT_METHODS = frozenset({"GET", "HEAD", "PUT", "DELETE", "OPTIONS"})
 class InternalHttpClient:
     """simplificação de `httpx.AsyncClient` com timeout e retry/backoff para um serviço interno Solier
 
-    Uma instância é criada por serviço (persistence|auth)
+    Uma instância é criada por serviço (hoje só auth)
     """
 
     def __init__(self, *, base_url: str, service: str, timeout: httpx.Timeout | None = None) -> None:

@@ -39,7 +39,6 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
         for capability, base_url in _GOOGLE_BASE_URLS.items()
     }
     app.state.internal_http_clients = {
-        "persistence": InternalHttpClient(base_url=settings.persistence_base_url, service="persistence"),
         "auth": InternalHttpClient(base_url=settings.auth_base_url, service="auth"),
     }
 
