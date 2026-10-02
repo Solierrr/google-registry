@@ -18,6 +18,8 @@ from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 
 _SERVICE_NAME = "google-registry"
 _UVICORN_LOGGERS = ("uvicorn", "uvicorn.error", "uvicorn.access")
+# Loggers que registram a URL completa das chamadas (inclusive a chave de API quando ela vai na query)
+_URL_LOGGING_LOGGERS = ("httpx", "httpcore")
 
 _otel_handler: LoggingHandler | None = None
 
@@ -41,6 +43,9 @@ def configure_logging(level: str = "INFO") -> None:
     set_logger_provider(provider)
 
     _otel_handler = LoggingHandler(level=numeric_level, logger_provider=provider)
+
+    for name in _URL_LOGGING_LOGGERS:
+        logging.getLogger(name).setLevel(logging.WARNING)
 
     root = logging.getLogger()
     root.setLevel(numeric_level)
