@@ -4,8 +4,11 @@ Cada adapter Google recebe suas credenciais por está classe
 nenhum outro módulo lê variável de ambiente diretamente
 """
 
+import os
+from collections.abc import Mapping
 from functools import lru_cache
 
+from dotenv import dotenv_values
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -38,8 +41,21 @@ class Settings(BaseSettings):
     # repos Solier chamados via HTTP
     auth_base_url: str
 
+    # Verificação de validade das chaves de LLM em segundo plano (0 desliga)
+    llm_probe_interval_seconds: int = 300
+
 
 @lru_cache
 def get_settings() -> Settings:
     """Retorna a instância única de `Settings` para o processo atual"""
     return Settings()
+
+
+def get_llm_environ() -> Mapping[str, str]:
+    """Variáveis de ambiente de onde as chaves de LLM são lidas (`<PROVEDOR>_API_KEY_<N>`)
+
+    As variáveis do processo valem mais que as do arquivo `.env`; como o conjunto de chaves é variável,
+    elas não são campos de `Settings`
+    """
+    file_values = {name: value for name, value in dotenv_values(".env").items() if value is not None}
+    return {**file_values, **os.environ}

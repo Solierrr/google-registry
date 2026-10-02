@@ -9,7 +9,7 @@ import logging
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from app.exceptions import GoogleProviderException, InternalServiceException
+from app.exceptions import GoogleProviderException, InternalServiceException, LlmKeyException
 
 _log = logging.getLogger("google_registry.exceptions")
 
@@ -47,6 +47,18 @@ async def _internal_service_exception_handler(request: Request, exc: Exception) 
     return JSONResponse(status_code=status_code, content=body)
 
 
+async def _llm_key_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    # handler invocado apenas para LlmKeyException
+    assert isinstance(exc, LlmKeyException)
+    _log.warning("Erro %d em %s %s: %s", exc.http_status, request.method, request.url.path, exc)
+    body: dict[str, object] = {"code": type(exc).__name__, "message": str(exc)}
+    details = exc.details()
+    if details is not None:
+        body["details"] = details
+    headers = {"Retry-After": str(exc.retry_after_seconds)} if exc.retry_after_seconds is not None else None
+    return JSONResponse(status_code=exc.http_status, content=body, headers=headers)
+
+
 async def _unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """handler para execções não mapeadas"""
     _log.error("Falha 500 não tratada em %s %s", request.method, request.url.path, exc_info=exc)
@@ -60,4 +72,5 @@ def register_exception_handlers(app: FastAPI) -> None:
     """Registra os handlers de erro do serviço, do mais específico para o mais genérico"""
     app.add_exception_handler(GoogleProviderException, _google_provider_exception_handler)
     app.add_exception_handler(InternalServiceException, _internal_service_exception_handler)
+    app.add_exception_handler(LlmKeyException, _llm_key_exception_handler)
     app.add_exception_handler(Exception, _unhandled_exception_handler)

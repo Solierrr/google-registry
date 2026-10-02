@@ -5,16 +5,23 @@ uma vez no lifespan e reaproveitados por request via `app.api.dependencies`)
 e a observabilidade (logging/tracing/metrics OTEL).
 """
 
+import asyncio
+import contextlib
+import logging
+import time
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
 from fastapi import FastAPI
 
-from app.api.routers import address, i18n, solar
-from app.config import get_settings
+from app.api.routers import address, i18n, llm, solar
+from app.application.llm.key_pool import KeyPool
+from app.config import get_llm_environ, get_settings
 from app.exceptions.handlers import register_exception_handlers
 from app.infrastructure.http.google_http_client import GoogleHttpClient
 from app.infrastructure.http.internal_http_client import InternalHttpClient
+from app.infrastructure.llm.keys import load_llm_keys
+from app.infrastructure.llm.probe import run_probes
 from app.infrastructure.observability.logging import attach_otel_to_uvicorn, configure_logging
 from app.infrastructure.observability.metrics import configure_metrics
 from app.infrastructure.observability.tracing import configure_tracing, instrument_fastapi
@@ -27,6 +34,9 @@ _GOOGLE_BASE_URLS = {
     "solar": "https://solar.googleapis.com",
     "translation": "https://translation.googleapis.com",
 }
+
+
+_log = logging.getLogger("google_registry.main")
 
 
 @asynccontextmanager
@@ -45,8 +55,20 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
         "auth": InternalHttpClient(base_url=settings.auth_base_url, service="auth"),
     }
 
+    llm_keys = load_llm_keys(get_llm_environ())
+    app.state.llm_key_pool = KeyPool(llm_keys, clock=time.time)
+    for provider in sorted({key.provider for key in llm_keys}):
+        _log.info("Chaves de LLM carregadas: %d de %s", sum(k.provider == provider for k in llm_keys), provider)
+    probe_task = None
+    if llm_keys and settings.llm_probe_interval_seconds > 0:
+        probe_task = asyncio.create_task(run_probes(app.state.llm_key_pool, settings.llm_probe_interval_seconds))
+
     yield
 
+    if probe_task is not None:
+        probe_task.cancel()
+        with contextlib.suppress(asyncio.CancelledError):
+            await probe_task
     for client in app.state.google_http_clients.values():
         await client.aclose()
     for client in app.state.internal_http_clients.values():
@@ -61,6 +83,7 @@ register_exception_handlers(app)
 app.include_router(address.router)
 app.include_router(solar.router)
 app.include_router(i18n.router)
+app.include_router(llm.router)
 
 
 @app.get("/health", tags=["health"])

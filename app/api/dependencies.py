@@ -10,6 +10,7 @@ from typing import Annotated
 
 from fastapi import Depends, Request
 
+from app.application.llm.key_pool import KeyPool
 from app.infrastructure.http.google_http_client import GoogleHttpClient
 from app.infrastructure.http.internal_http_client import InternalHttpClient
 from app.infrastructure.solier.auth.calendar_token_client import AuthCalendarTokenClient
@@ -73,3 +74,8 @@ def get_calendar_token_client(
 ) -> AuthCalendarTokenClient:
     """Cliente dos tokens OAuth do Calendar por técnico, ligado ao `InternalHttpClient` do api-auth"""
     return AuthCalendarTokenClient(http_client)
+
+
+def get_llm_key_pool(request: Request) -> KeyPool:
+    """Fila de chaves de LLM, criada no lifespan"""
+    return request.app.state.llm_key_pool
