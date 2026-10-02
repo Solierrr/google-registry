@@ -1,6 +1,6 @@
 # google-registry
 
-O `google-registry` é o serviço central de integração com APIs do Google da organização (Solar, Maps, Translate, Calendar), consumido internamente por `api-core`/`api-auth` em vez de cada repositório configurar suas próprias credenciais Google.
+O `google-registry` é o serviço central de integração com APIs do Google da organização (Maps, Solar, Translate, chaves de LLM e, em breve, Calendar), consumido internamente pelos serviços da Solaria em vez de cada repositório configurar suas próprias credenciais.
 
 <p>
 
@@ -26,11 +26,15 @@ O `google-registry` é o serviço central de integração com APIs do Google da 
 ## Status
 
 - **FastAPI**, arquitetura em camadas (`domain`/`application`/`infrastructure`/`api`), um módulo por capability.
-- **Capability `solar`**, viabilidade solar de um telhado via Solar API do Google, com gravação opcional do perfil em `api-core`.
-- **Capability `i18n`**, detecção de idioma + tradução automática (Cloud Translation API) de campos de texto inseridos em `api-core`, gravada de volta lá.
-- **Autenticação**, JWT RS256 de usuário validado via JWKS do `api-auth` (`app/infrastructure/auth`).
+- **Sem estado**, o serviço só chama o Google (ou lê chaves do ambiente) conforme os parâmetros e devolve o resultado; quem chamou grava onde precisar.
+- **Capability `address`**, sugestão de endereço, detalhes por `place_id`, geocodificação (direta e reversa), validação e `resolve` (Places New, Geocoding e Address Validation).
+- **Capability `solar`**, viabilidade solar de um telhado via Solar API, incluindo os dados do painel de referência.
+- **Capability `i18n`**, detecção de idioma + tradução (Cloud Translation API) de campos de texto para os outros dois entre `en`/`es`/`pt`.
+- **Capability `llm`**, corretor de chaves de modelos (Gemini, Groq): entrega uma chave em rodízio FIFO, aceita aviso de limite de uso/chave inválida e verifica a validade em segundo plano.
+- **Capability `geo`**, fuso horário por coordenada, calculado localmente.
+- **Autenticação**, JWT RS256 de usuário validado via JWKS do `api-auth` (`app/infrastructure/auth`); ainda não aplicado nos endpoints.
 - **Observabilidade**, logging/tracing/metrics via OpenTelemetry.
-- **Licença MIT**, sob copyright da Solaria.
+- **Licença Apache 2.0**.
 
 ## Aprofunde-se no Projeto!
 
