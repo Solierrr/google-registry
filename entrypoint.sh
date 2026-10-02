@@ -15,7 +15,10 @@ if [ -n "${INFISICAL_CLIENT_ID:-}" ] && [ -n "${INFISICAL_CLIENT_SECRET:-}" ]; t
   exec infisical run $FLAGS --path=/llm -- \
     infisical run $FLAGS --path=/google -- \
     infisical run $FLAGS --path=/service-urls -- \
-    uvicorn app.main:app --host 0.0.0.0 --port "$PORT"
+    sh -c 'export GOOGLE_KEY_MAPS="${GOOGLE_KEY_MAPS:-$GOOGLE_MAPS_API_KEY}" \
+      GOOGLE_KEY_TRANSLATION="${GOOGLE_KEY_TRANSLATION:-$GOOGLE_TRANSLATE_API_KEY}" \
+      AUTH_BASE_URL="${AUTH_BASE_URL:-$AUTH_SERVICE_URL}"; \
+      exec uvicorn app.main:app --host 0.0.0.0 --port "$PORT"'
 fi
 
 exec uvicorn app.main:app --host 0.0.0.0 --port "$PORT"
