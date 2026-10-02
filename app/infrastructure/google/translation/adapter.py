@@ -33,7 +33,7 @@ class TranslationAdapter(TranslationPort):
             GoogleUpstreamException: resposta HTTP 200 do Google em formato inesperado
         """
         response = await self._http_client.request(
-            "POST", _DETECT_PATH, json={"q": text}, headers={"X-Goog-Api-Key": self._api_key}
+            "POST", _DETECT_PATH, json={"q": text}, headers={"X-Goog-Api-Key": self._api_key}, retry=True
         )
         payload = self._parse_json(response)
         try:
@@ -43,34 +43,41 @@ class TranslationAdapter(TranslationPort):
                 "Resposta da Translation API do Google em formato inesperado", capability="translation"
             ) from exc
 
-    async def translate(self, text: str, target_language: str, *, source_language: str | None = None) -> str:
-        """Consulta `language/translate/v2` e retorna o texto traduzido
+    async def translate_batch(
+        self, texts: list[str], target_language: str, *, source_language: str | None = None
+    ) -> list[str]:
+        """Consulta `language/translate/v2` com vários textos e retorna as traduções na mesma ordem
 
         Args:
-            text: texto no idioma de origem
+            texts: textos no idioma de origem
             target_language: idioma de destino (ISO 639-1)
             source_language: idioma de origem (ISO 639-1), se já conhecido
 
         Returns:
-            O texto traduzido para `target_language`
+            Os textos traduzidos para `target_language`, na mesma ordem de `texts`
 
         Raises:
             GoogleUpstreamException: resposta HTTP 200 do Google em formato inesperado
         """
-        body: dict[str, Any] = {"q": text, "target": target_language, "format": "text"}
+        body: dict[str, Any] = {"q": texts, "target": target_language, "format": "text"}
         if source_language is not None:
             body["source"] = source_language
 
         response = await self._http_client.request(
-            "POST", _TRANSLATE_PATH, json=body, headers={"X-Goog-Api-Key": self._api_key}
+            "POST", _TRANSLATE_PATH, json=body, headers={"X-Goog-Api-Key": self._api_key}, retry=True
         )
         payload = self._parse_json(response)
         try:
-            return payload["data"]["translations"][0]["translatedText"]
-        except (KeyError, IndexError, TypeError) as exc:
+            translated = [item["translatedText"] for item in payload["data"]["translations"]]
+        except (KeyError, TypeError) as exc:
             raise GoogleUpstreamException(
                 "Resposta da Translation API do Google em formato inesperado", capability="translation"
             ) from exc
+        if len(translated) != len(texts):
+            raise GoogleUpstreamException(
+                "Resposta da Translation API do Google em formato inesperado", capability="translation"
+            )
+        return translated
 
     @staticmethod
     def _parse_json(response: Any) -> dict[str, Any]:

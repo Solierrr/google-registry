@@ -22,7 +22,7 @@ def _get_service(
     return TranslationService(adapter)
 
 
-@router.post("/translate", summary="Detecta o idioma de origem e traduz um registro pros demais idiomas suportados")
+@router.post("/translate", summary="Detecta o idioma de origem e traduz campos de texto pros demais idiomas suportados")
 async def translate(
     request: TranslateRequest,
     service: Annotated[TranslationService, Depends(_get_service)],
@@ -32,7 +32,7 @@ async def translate(
     O resultado é apenas devolvido: quem chamou grava onde precisar.
 
     Args:
-        request: tabela/id de origem, campos de texto e idioma de origem (opcional)
+        request: campos de texto e idioma de origem (opcional)
         service: service com client google injetado
 
     Returns:
@@ -41,6 +41,4 @@ async def translate(
     Raises:
         GoogleUpstreamException: resposta HTTP 200 do Google em formato inesperado
     """
-    return await service.translate_entity(
-        request.entity_table, str(request.entity_id), request.fields, request.source_language
-    )
+    return await service.translate_fields(request.fields, request.source_language)

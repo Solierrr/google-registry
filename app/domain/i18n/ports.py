@@ -20,16 +20,18 @@ class TranslationPort(Protocol):
         """
         ...
 
-    async def translate(self, text: str, target_language: str, *, source_language: str | None = None) -> str:
-        """Traduz o texto para o idioma de destino
+    async def translate_batch(
+        self, texts: list[str], target_language: str, *, source_language: str | None = None
+    ) -> list[str]:
+        """Traduz vários textos para o idioma de destino em uma única chamada
 
         Args:
-            text: texto no idioma de origem
+            texts: textos no idioma de origem
             target_language: idioma de destino (ISO 639-1)
             source_language: idioma de origem (ISO 639-1), se já conhecido
 
         Returns:
-            O texto traduzido para `target_language`
+            Os textos traduzidos para `target_language`, na mesma ordem de `texts`
 
         Raises:
             GoogleUpstreamException: resposta HTTP 200 do Google em formato inesperado
