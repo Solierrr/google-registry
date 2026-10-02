@@ -106,6 +106,27 @@ class CalendarTokenRevokedException(GoogleProviderException):
         return {"technician_id": self.technician_id}
 
 
+class CalendarConsentDeniedException(GoogleProviderException):
+    """O técnico recusou o consentimento na tela do Google"""
+
+    http_status = 409
+    error_type = "consent_denied"
+
+    def __init__(self, message: str, *, technician_id: str) -> None:
+        super().__init__(message, capability="calendar")
+        self.technician_id = technician_id
+
+    def details(self) -> dict[str, Any]:
+        return {"technician_id": self.technician_id}
+
+
+class CalendarNotConfiguredException(GoogleProviderException):
+    """O OAuth do Calendar não está configurado neste ambiente (variáveis ausentes)"""
+
+    http_status = 503
+    error_type = "not_configured"
+
+
 class InternalServiceException(Exception):
     """Exceção base de erro ao chamar um serviço interno Solier (api-auth)"""
 

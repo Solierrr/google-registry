@@ -14,7 +14,7 @@ from typing import AsyncIterator
 
 from fastapi import FastAPI
 
-from app.api.routers import address, geo, i18n, llm, routes, solar, weather
+from app.api.routers import address, calendar, geo, i18n, llm, routes, solar, weather
 from app.application.llm.key_pool import KeyPool
 from app.config import get_llm_environ, get_settings
 from app.exceptions.handlers import register_exception_handlers
@@ -29,6 +29,8 @@ from app.infrastructure.observability.tracing import configure_tracing, instrume
 # Base URL por capability Google - chave usada em app.api.dependencies.get_http_client(capability)
 _GOOGLE_BASE_URLS = {
     "address_validation": "https://addressvalidation.googleapis.com",
+    "calendar": "https://www.googleapis.com",
+    "calendar_oauth": "https://oauth2.googleapis.com",
     "geocoding": "https://maps.googleapis.com",
     "places": "https://places.googleapis.com",
     "routes": "https://routes.googleapis.com",
@@ -87,6 +89,7 @@ instrument_fastapi(app)
 register_exception_handlers(app)
 
 app.include_router(address.router)
+app.include_router(calendar.router)
 app.include_router(solar.router)
 app.include_router(geo.router)
 app.include_router(i18n.router)
