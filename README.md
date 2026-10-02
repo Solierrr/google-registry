@@ -29,6 +29,7 @@ O `google-registry` é o serviço central de integração com APIs do Google da 
 - **Sem estado**, o serviço só chama o Google (ou lê chaves do ambiente) conforme os parâmetros e devolve o resultado; quem chamou grava onde precisar.
 - **Capability `address`**, sugestão de endereço, detalhes por `place_id`, geocodificação (direta e reversa), validação e `resolve` (Places New, Geocoding e Address Validation).
 - **Capability `solar`**, viabilidade solar de um telhado via Solar API, incluindo os dados do painel de referência.
+- **Capability `calendar`**, consentimento OAuth por técnico, disponibilidade e eventos da agenda principal (Calendar API). Os tokens ficam no `api-auth`, o registry não guarda nada.
 - **Capability `routes`**, rotas de carro ou a pé entre dois pontos, com alternativas, trânsito previsto e traçado (Routes API).
 - **Capability `weather`**, previsão do clima para uma hora, até 239 horas à frente (Weather API).
 - **Capability `i18n`**, detecção de idioma + tradução (Cloud Translation API) de campos de texto para os outros dois entre `en`/`es`/`pt`.

@@ -33,6 +33,8 @@ class Settings(BaseSettings):
     google_calendar_oauth_client_id: str | None = Field(None, repr=False)
     google_calendar_oauth_client_secret: str | None = Field(None, repr=False)
     google_calendar_oauth_redirect_uri: str | None = None
+    # Segredo que assina o `state` do fluxo OAuth do Calendar (ausente: as rotas do Calendar respondem 503)
+    calendar_state_secret: str | None = Field(None, repr=False)
 
     # Validação do JWT RS256 de usuário
     jwt_jwks_url: str = "http://localhost:8081/.well-known/jwks.json"
@@ -43,6 +45,8 @@ class Settings(BaseSettings):
 
     # repos Solier chamados via HTTP
     auth_base_url: str
+    # Enviado ao api-auth em `X-Internal-Token` (`/internal/**`); ausente: o api-auth recusa as chamadas com 401
+    internal_api_token: str | None = Field(None, repr=False)
 
     # Verificação de validade das chaves de LLM em segundo plano (0 desliga)
     llm_probe_interval_seconds: int = 300
