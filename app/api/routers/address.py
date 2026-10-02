@@ -7,19 +7,30 @@ from fastapi import APIRouter, Depends, Query
 from app.api.dependencies import get_http_client
 from app.application.address.service import AddressService
 from app.config import get_settings
+from app.infrastructure.google.geocoding.adapter import GeocodingAdapter
 from app.infrastructure.google.places.adapter import PlacesAdapter
 from app.infrastructure.http.google_http_client import GoogleHttpClient
-from app.schemas.address import Address, SuggestionsRequest, SuggestionsResponse
+from app.schemas.address import (
+    Address,
+    AddressListResponse,
+    GeocodeRequest,
+    ReverseGeocodeRequest,
+    SuggestionsRequest,
+    SuggestionsResponse,
+)
 
 router = APIRouter(prefix="/v1/address", tags=["address"])
 
 
 def _get_service(
     places_client: Annotated[GoogleHttpClient, Depends(get_http_client("places"))],
+    geocoding_client: Annotated[GoogleHttpClient, Depends(get_http_client("geocoding"))],
 ) -> AddressService:
     """Monta o `AddressService` a partir dos clientes Google das capabilities de endereço"""
     api_key = get_settings().google_key_maps
-    return AddressService(PlacesAdapter(places_client, api_key=api_key))
+    return AddressService(
+        PlacesAdapter(places_client, api_key=api_key), GeocodingAdapter(geocoding_client, api_key=api_key)
+    )
 
 
 @router.post("/suggestions", summary="Sugere endereços enquanto o usuário digita")
@@ -68,3 +79,45 @@ async def get_place(
         GoogleNotFoundException: place_id inexistente ou expirado / HTTP 404
     """
     return await service.get_place(place_id, session_token=session_token, language=language)
+
+
+@router.post("/geocode", summary="Converte um endereço em texto em coordenadas")
+async def geocode(
+    request: GeocodeRequest,
+    service: Annotated[AddressService, Depends(_get_service)],
+) -> AddressListResponse:
+    """Converte um endereço em texto livre em coordenadas, restrito ao Brasil.
+
+    Args:
+        request: endereço e idioma
+        service: service com os clients google injetados
+
+    Returns:
+        Os endereços encontrados, com precisão e indicação de casamento parcial (lista vazia se nada casar)
+
+    Raises:
+        GoogleRateLimitException: quota excedida / HTTP 503
+        GoogleValidationException: pedido inválido / HTTP 400
+    """
+    return await service.geocode(request.address, language=request.language)
+
+
+@router.post("/reverse-geocode", summary="Converte uma coordenada em endereços")
+async def reverse_geocode(
+    request: ReverseGeocodeRequest,
+    service: Annotated[AddressService, Depends(_get_service)],
+) -> AddressListResponse:
+    """Converte uma coordenada em endereços, do mais específico para o menos.
+
+    Args:
+        request: coordenada e idioma
+        service: service com os clients google injetados
+
+    Returns:
+        Os endereços encontrados (lista vazia se não houver)
+
+    Raises:
+        GoogleRateLimitException: quota excedida / HTTP 503
+        GoogleValidationException: pedido inválido / HTTP 400
+    """
+    return await service.reverse_geocode(request.latitude, request.longitude, language=request.language)

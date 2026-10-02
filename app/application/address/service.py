@@ -3,15 +3,16 @@
 Orquestra os ports de busca de endereço
 """
 
-from app.domain.address.ports import PlacesPort
-from app.schemas.address import Address, SuggestionsResponse
+from app.domain.address.ports import GeocodingPort, PlacesPort
+from app.schemas.address import Address, AddressListResponse, SuggestionsResponse
 
 
 class AddressService:
-    """Orquestra o provedor Google de endereços (`PlacesPort`)"""
+    """Orquestra os provedores Google de endereço (`PlacesPort`, `GeocodingPort`)"""
 
-    def __init__(self, places: PlacesPort) -> None:
+    def __init__(self, places: PlacesPort, geocoding: GeocodingPort) -> None:
         self._places = places
+        self._geocoding = geocoding
 
     async def suggest(
         self, query: str, *, session_token: str | None, language: str, country: str
@@ -49,3 +50,40 @@ class AddressService:
             GoogleUpstreamException: resposta HTTP 200 do Google em formato inesperado
         """
         return await self._places.get_details(place_id, session_token=session_token, language=language)
+
+    async def geocode(self, address: str, *, language: str) -> AddressListResponse:
+        """Converte um endereço em texto em coordenadas
+
+        Args:
+            address: endereço em texto livre
+            language: idioma da resposta
+
+        Returns:
+            Os endereços encontrados (vazia se nada casar)
+
+        Raises:
+            GoogleRateLimitException: quota excedida
+            GoogleValidationException: pedido inválido
+            GoogleUpstreamException: resposta em formato inesperado
+        """
+        return AddressListResponse(results=await self._geocoding.geocode(address, language=language))
+
+    async def reverse_geocode(self, latitude: float, longitude: float, *, language: str) -> AddressListResponse:
+        """Converte uma coordenada em endereços
+
+        Args:
+            latitude: latitude do ponto
+            longitude: longitude do ponto
+            language: idioma da resposta
+
+        Returns:
+            Os endereços encontrados, do mais específico para o menos (vazia se não houver)
+
+        Raises:
+            GoogleRateLimitException: quota excedida
+            GoogleValidationException: pedido inválido
+            GoogleUpstreamException: resposta em formato inesperado
+        """
+        return AddressListResponse(
+            results=await self._geocoding.reverse_geocode(latitude, longitude, language=language)
+        )

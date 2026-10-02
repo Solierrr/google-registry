@@ -21,6 +21,7 @@ from app.infrastructure.observability.tracing import configure_tracing, instrume
 
 # Base URL por capability Google - chave usada em app.api.dependencies.get_http_client(capability)
 _GOOGLE_BASE_URLS = {
+    "geocoding": "https://maps.googleapis.com",
     "places": "https://places.googleapis.com",
     "solar": "https://solar.googleapis.com",
     "translation": "https://translation.googleapis.com",

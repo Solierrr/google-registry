@@ -8,6 +8,7 @@ from urllib.parse import quote
 
 from app.domain.address.ports import PlacesPort
 from app.exceptions import GoogleNotFoundException, GoogleUpstreamException
+from app.infrastructure.google.address_components import address_fields, index_by_type
 from app.infrastructure.http.google_http_client import GoogleHttpClient
 from app.schemas.address import Address, Suggestion
 
@@ -117,35 +118,16 @@ def _to_suggestion(raw: Any) -> Suggestion | None:
 def _to_address(payload: dict[str, Any]) -> Address:
     try:
         location = payload["location"]
-        components = _components_by_type(payload.get("addressComponents") or [])
+        components = index_by_type(
+            (component.get("types", []), (component.get("longText"), component.get("shortText")))
+            for component in payload.get("addressComponents") or []
+        )
         return Address(
             place_id=payload.get("id"),
             formatted_address=payload["formattedAddress"],
-            street_name=_text(components, "route"),
-            street_number=_text(components, "street_number"),
-            complement=_text(components, "subpremise"),
-            neighborhood=_text(components, "sublocality_level_1") or _text(components, "sublocality"),
-            city=_text(components, "locality") or _text(components, "administrative_area_level_2"),
-            state=_text(components, "administrative_area_level_1", short=True),
-            postal_code=_text(components, "postal_code"),
-            country_code=_text(components, "country", short=True),
             latitude=location["latitude"],
             longitude=location["longitude"],
+            **address_fields(components),
         )
     except (KeyError, TypeError, AttributeError) as exc:
         raise GoogleUpstreamException(_UNEXPECTED, capability="places") from exc
-
-
-def _components_by_type(raw_components: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
-    by_type: dict[str, dict[str, Any]] = {}
-    for component in raw_components:
-        for component_type in component.get("types", []):
-            by_type.setdefault(component_type, component)
-    return by_type
-
-
-def _text(components: dict[str, dict[str, Any]], component_type: str, *, short: bool = False) -> str | None:
-    component = components.get(component_type)
-    if component is None:
-        return None
-    return component.get("shortText" if short else "longText")

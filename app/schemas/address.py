@@ -57,3 +57,24 @@ class SuggestionsResponse(BaseModel):
     """Sugestões de endereço, da mais relevante para a menos"""
 
     suggestions: list[Suggestion] = Field(..., description="Sugestões (vazia se nada casar)")
+
+
+class GeocodeRequest(BaseModel):
+    """Pedido de coordenadas para um endereço em texto"""
+
+    address: str = Field(..., min_length=3, description="Endereço em texto livre")
+    language: str = Field(default="pt-BR", description="Idioma da resposta")
+
+
+class ReverseGeocodeRequest(BaseModel):
+    """Pedido de endereço para uma coordenada"""
+
+    latitude: float = Field(..., ge=-90, le=90, description="Latitude do ponto")
+    longitude: float = Field(..., ge=-180, le=180, description="Longitude do ponto")
+    language: str = Field(default="pt-BR", description="Idioma da resposta")
+
+
+class AddressListResponse(BaseModel):
+    """Endereços encontrados, do mais relevante/específico para o menos"""
+
+    results: list[Address] = Field(..., description="Endereços encontrados (vazia se nada casar)")

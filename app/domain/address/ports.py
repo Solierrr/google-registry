@@ -41,3 +41,46 @@ class PlacesPort(Protocol):
             GoogleUpstreamException: resposta HTTP 200 do Google em formato inesperado
         """
         ...
+
+
+class GeocodingPort(Protocol):
+    """Operações de geocodificação esperadas"""
+
+    async def geocode(self, address: str, *, language: str) -> list[Address]:
+        """Converte um endereço em texto em coordenadas (restrito ao Brasil)
+
+        Args:
+            address: endereço em texto livre
+            language: idioma da resposta
+
+        Returns:
+            Os endereços encontrados (vazia se nada casar), com precisão e indicação de casamento parcial
+
+        Raises:
+            GoogleRateLimitException: quota excedida
+            GoogleAuthenticationException: chave negada pelo Google
+            GoogleValidationException: pedido inválido
+            GoogleUnavailableException: erro temporário do Google
+            GoogleUpstreamException: resposta em formato inesperado
+        """
+        ...
+
+    async def reverse_geocode(self, latitude: float, longitude: float, *, language: str) -> list[Address]:
+        """Converte uma coordenada em endereços
+
+        Args:
+            latitude: latitude do ponto
+            longitude: longitude do ponto
+            language: idioma da resposta
+
+        Returns:
+            Os endereços encontrados, do mais específico para o menos (vazia se não houver)
+
+        Raises:
+            GoogleRateLimitException: quota excedida
+            GoogleAuthenticationException: chave negada pelo Google
+            GoogleValidationException: pedido inválido
+            GoogleUnavailableException: erro temporário do Google
+            GoogleUpstreamException: resposta em formato inesperado
+        """
+        ...
