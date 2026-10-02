@@ -30,9 +30,9 @@ class Settings(BaseSettings):
     google_key_translation: str = Field(..., repr=False)
 
     # OAuth 2.0 Authorization Code por técnico
-    google_calendar_oauth_client_id: str = Field(..., repr=False)
-    google_calendar_oauth_client_secret: str = Field(..., repr=False)
-    google_calendar_oauth_redirect_uri: str
+    google_calendar_oauth_client_id: str | None = Field(None, repr=False)
+    google_calendar_oauth_client_secret: str | None = Field(None, repr=False)
+    google_calendar_oauth_redirect_uri: str | None = None
 
     # Validação do JWT RS256 de usuário
     jwt_jwks_url: str = "http://localhost:8081/.well-known/jwks.json"
