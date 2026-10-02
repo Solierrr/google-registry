@@ -54,7 +54,11 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
         for capability, base_url in _GOOGLE_BASE_URLS.items()
     }
     app.state.internal_http_clients = {
-        "auth": InternalHttpClient(base_url=settings.auth_base_url, service="auth"),
+        "auth": InternalHttpClient(
+            base_url=settings.auth_base_url,
+            service="auth",
+            headers={"X-Internal-Token": settings.internal_api_token} if settings.internal_api_token else None,
+        ),
     }
 
     llm_keys = load_llm_keys(get_llm_environ())

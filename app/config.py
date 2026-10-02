@@ -43,6 +43,8 @@ class Settings(BaseSettings):
 
     # repos Solier chamados via HTTP
     auth_base_url: str
+    # Enviado ao api-auth em `X-Internal-Token` (`/internal/**`); ausente: o api-auth recusa as chamadas com 401
+    internal_api_token: str | None = Field(None, repr=False)
 
     # Verificação de validade das chaves de LLM em segundo plano (0 desliga)
     llm_probe_interval_seconds: int = 300

@@ -42,10 +42,18 @@ class InternalHttpClient:
     Uma instância é criada por serviço (hoje só auth)
     """
 
-    def __init__(self, *, base_url: str, service: str, timeout: httpx.Timeout | None = None) -> None:
+    def __init__(
+        self,
+        *,
+        base_url: str,
+        service: str,
+        timeout: httpx.Timeout | None = None,
+        headers: dict[str, str] | None = None,
+    ) -> None:
         self._service = service
         self._client = httpx.AsyncClient(
             base_url=base_url,
+            headers=headers,
             timeout=timeout or httpx.Timeout(connect=3.0, read=10.0, write=10.0, pool=3.0),
         )
         self._tracer = get_tracer()
