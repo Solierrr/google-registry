@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/Solierrr/google-registry/compare/v0.2.0...v0.3.0) (2026-10-02)
+
+
+### Features
+
+* add address, llm keys and timezone capabilities and make the registry stateless ([#21](https://github.com/Solierrr/google-registry/issues/21)) ([982545b](https://github.com/Solierrr/google-registry/commit/982545bbd6abc8f908d02f2279fe1f85d4b41781))
+
 ## [0.2.0](https://github.com/Solierrr/google-registry/compare/v0.1.0...v0.2.0) (2026-09-30)
 
 
