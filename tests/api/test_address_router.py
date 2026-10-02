@@ -145,3 +145,32 @@ def test_validate_requires_at_least_one_address_line(client):
     response = client.post("/v1/address/validate", json={"address_lines": []})
 
     assert response.status_code == 422
+
+
+@respx.mock
+def test_resolve_by_place_id_returns_address_and_validation(client):
+    respx.get(f"{PLACES}/v1/places/ChIJ1").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "id": "ChIJ1",
+                "formattedAddress": "Av. Paulista, 1000",
+                "location": {"latitude": -23.5, "longitude": -46.6},
+            },
+        )
+    )
+    respx.post(VALIDATE).mock(return_value=httpx.Response(503))
+
+    response = client.post("/v1/address/resolve", json={"place_id": "ChIJ1"})
+
+    assert response.status_code == 200
+    assert response.json()["address"]["formatted_address"] == "Av. Paulista, 1000"
+    assert response.json()["validation"] is None
+
+
+def test_resolve_requires_exactly_one_of_place_id_and_query(client):
+    both = client.post("/v1/address/resolve", json={"place_id": "ChIJ1", "query": "av paulista"})
+    neither = client.post("/v1/address/resolve", json={})
+
+    assert both.status_code == 422
+    assert neither.status_code == 422

@@ -3,8 +3,21 @@
 Orquestra os ports de busca de endereço
 """
 
+import logging
+
 from app.domain.address.ports import AddressValidationPort, GeocodingPort, PlacesPort
-from app.schemas.address import Address, AddressListResponse, SuggestionsResponse, ValidateRequest, ValidateResponse
+from app.exceptions import GoogleNotFoundException, GoogleProviderException
+from app.schemas.address import (
+    Address,
+    AddressListResponse,
+    AddressValidation,
+    ResolveResponse,
+    SuggestionsResponse,
+    ValidateRequest,
+    ValidateResponse,
+)
+
+_log = logging.getLogger("google_registry.address")
 
 
 class AddressService:
@@ -103,3 +116,52 @@ class AddressService:
             GoogleUpstreamException: resposta HTTP 200 do Google em formato inesperado
         """
         return await self._validation.validate(request)
+
+    async def resolve(
+        self, *, place_id: str | None, query: str | None, session_token: str | None, language: str
+    ) -> ResolveResponse:
+        """Resolve o endereço final: busca por `place_id` (ou geocodifica o texto) e valida o resultado
+
+        Args:
+            place_id: lugar escolhido nas sugestões (exclusivo com `query`)
+            query: endereço em texto livre (exclusivo com `place_id`)
+            session_token: mesmo token de sessão usado nas sugestões
+            language: idioma da resposta
+
+        Returns:
+            O endereço com coordenadas e a validação (nula se o serviço de validação falhar)
+
+        Raises:
+            GoogleNotFoundException: lugar ou texto sem resultado
+            GoogleUpstreamException: resposta HTTP 200 do Google em formato inesperado
+        """
+        if place_id is not None:
+            address = await self._places.get_details(place_id, session_token=session_token, language=language)
+        else:
+            assert query is not None
+            results = await self._geocoding.geocode(query, language=language)
+            if not results:
+                raise GoogleNotFoundException("Endereço não encontrado para o texto informado", capability="geocoding")
+            address = results[0]
+
+        return ResolveResponse(address=address, validation=await self._validate_resolved(address))
+
+    async def _validate_resolved(self, address: Address) -> AddressValidation | None:
+        """Valida o endereço resolvido; falha do Google vira `None` em vez de derrubar a resolução"""
+        request = ValidateRequest(
+            address_lines=[address.formatted_address],
+            postal_code=address.postal_code,
+            locality=address.city,
+            administrative_area=address.state,
+            region_code=address.country_code or "BR",
+        )
+        try:
+            result = await self._validation.validate(request)
+        except GoogleProviderException:
+            _log.warning("Validação indisponível ao resolver endereço", exc_info=True)
+            return None
+        return AddressValidation(
+            verdict=result.verdict,
+            missing_components=result.missing_components,
+            unconfirmed_components=result.unconfirmed_components,
+        )

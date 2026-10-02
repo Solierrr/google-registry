@@ -32,6 +32,17 @@ def _reset_settings_cache():
     get_settings.cache_clear()
 
 
+@pytest.fixture(autouse=True)
+def _no_retry_backoff(monkeypatch):
+    """Elimina a espera entre as tentativas do `GoogleHttpClient`, para os testes de retry não demorarem"""
+    from app.infrastructure.http.google_http_client import GoogleHttpClient
+
+    async def no_sleep(self, attempt):
+        return None
+
+    monkeypatch.setattr(GoogleHttpClient, "_sleep_backoff", no_sleep)
+
+
 @pytest.fixture
 def client():
     """Cliente HTTP de teste da aplicação FastAPI (roda o lifespan, sem I/O real na criação dos clients)"""

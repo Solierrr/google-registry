@@ -7,7 +7,7 @@ transformação de dados Google -> ambiente Solier acontece nos adapters de
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 Precision = Literal["rooftop", "interpolated", "center", "approximate"]
 
@@ -118,4 +118,28 @@ class ValidateResponse(AddressValidation):
 
     address: Address | None = Field(
         default=None, description="Endereço normalizado com coordenadas (nulo se o Google não geocodificou)"
+    )
+
+
+class ResolveRequest(BaseModel):
+    """Pedido de endereço final a partir de um lugar escolhido ou de um texto"""
+
+    place_id: str | None = Field(default=None, description="Lugar escolhido nas sugestões")
+    query: str | None = Field(default=None, min_length=3, description="Endereço em texto livre")
+    session_token: str | None = Field(default=None, description="Mesmo token de sessão usado nas sugestões")
+    language: str = Field(default="pt-BR", description="Idioma da resposta")
+
+    @model_validator(mode="after")
+    def _exactly_one_of_place_id_and_query(self) -> "ResolveRequest":
+        if (self.place_id is None) == (self.query is None):
+            raise ValueError("informe exatamente um entre place_id e query")
+        return self
+
+
+class ResolveResponse(BaseModel):
+    """Endereço final com coordenadas e o resultado da validação"""
+
+    address: Address = Field(..., description="Endereço estruturado com coordenadas")
+    validation: AddressValidation | None = Field(
+        default=None, description="Validação do endereço; nulo se o serviço de validação estiver indisponível"
     )

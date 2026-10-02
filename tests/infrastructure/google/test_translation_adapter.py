@@ -66,11 +66,7 @@ async def test_translate_batch_rejects_malformed_payload(adapter):
 
 
 @respx.mock
-async def test_translate_batch_retries_rate_limit_then_succeeds(adapter, monkeypatch):
-    async def no_sleep(*_args, **_kwargs):
-        return None
-
-    monkeypatch.setattr("app.infrastructure.http.google_http_client.asyncio.sleep", no_sleep)
+async def test_translate_batch_retries_rate_limit_then_succeeds(adapter):
     route = respx.post(f"{BASE_URL}/language/translate/v2").mock(
         side_effect=[
             httpx.Response(429),
@@ -83,11 +79,7 @@ async def test_translate_batch_retries_rate_limit_then_succeeds(adapter, monkeyp
 
 
 @respx.mock
-async def test_translate_batch_raises_rate_limit_after_all_attempts(adapter, monkeypatch):
-    async def no_sleep(*_args, **_kwargs):
-        return None
-
-    monkeypatch.setattr("app.infrastructure.http.google_http_client.asyncio.sleep", no_sleep)
+async def test_translate_batch_raises_rate_limit_after_all_attempts(adapter):
     respx.post(f"{BASE_URL}/language/translate/v2").mock(return_value=httpx.Response(429))
 
     with pytest.raises(GoogleRateLimitException):

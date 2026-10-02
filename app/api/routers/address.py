@@ -15,6 +15,8 @@ from app.schemas.address import (
     Address,
     AddressListResponse,
     GeocodeRequest,
+    ResolveRequest,
+    ResolveResponse,
     ReverseGeocodeRequest,
     SuggestionsRequest,
     SuggestionsResponse,
@@ -147,3 +149,31 @@ async def validate_address(
         GoogleValidationException: pedido inválido / HTTP 400
     """
     return await service.validate(request)
+
+
+@router.post("/resolve", summary="Resolve o endereço final de um lugar escolhido ou de um texto")
+async def resolve_address(
+    request: ResolveRequest,
+    service: Annotated[AddressService, Depends(_get_service)],
+) -> ResolveResponse:
+    """Devolve o endereço estruturado, as coordenadas e a validação em uma só chamada.
+
+    Informe `place_id` (lugar escolhido nas sugestões) ou `query` (texto livre), nunca os dois.
+    Se a validação falhar por erro do Google, o endereço ainda é devolvido, com `validation` nulo.
+
+    Args:
+        request: `place_id` ou `query`, token de sessão e idioma
+        service: service com os clients google injetados
+
+    Returns:
+        O endereço com coordenadas e a validação
+
+    Raises:
+        GoogleNotFoundException: lugar ou texto sem resultado / HTTP 404
+    """
+    return await service.resolve(
+        place_id=request.place_id,
+        query=request.query,
+        session_token=request.session_token,
+        language=request.language,
+    )
