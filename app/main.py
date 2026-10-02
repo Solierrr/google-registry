@@ -10,7 +10,7 @@ from typing import AsyncIterator
 
 from fastapi import FastAPI
 
-from app.api.routers import i18n, solar
+from app.api.routers import address, i18n, solar
 from app.config import get_settings
 from app.exceptions.handlers import register_exception_handlers
 from app.infrastructure.http.google_http_client import GoogleHttpClient
@@ -21,6 +21,7 @@ from app.infrastructure.observability.tracing import configure_tracing, instrume
 
 # Base URL por capability Google - chave usada em app.api.dependencies.get_http_client(capability)
 _GOOGLE_BASE_URLS = {
+    "places": "https://places.googleapis.com",
     "solar": "https://solar.googleapis.com",
     "translation": "https://translation.googleapis.com",
 }
@@ -55,6 +56,7 @@ app = FastAPI(title="google-registry", lifespan=_lifespan)
 instrument_fastapi(app)
 register_exception_handlers(app)
 
+app.include_router(address.router)
 app.include_router(solar.router)
 app.include_router(i18n.router)
 
