@@ -5,10 +5,12 @@
 
 from typing import Any
 
+from pydantic import ValidationError
+
 from app.domain.solar.ports import SolarPort
 from app.exceptions import GoogleNotFoundException, GoogleUpstreamException
 from app.infrastructure.http.google_http_client import GoogleHttpClient
-from app.schemas.solar import RoofSegment, SolarViability
+from app.schemas.solar import RoofSegment, SolarPanelConfig, SolarViability
 
 _FIND_CLOSEST_PATH = "/v1/buildingInsights:findClosest"
 
@@ -76,11 +78,40 @@ class SolarAdapter(SolarPort):
                 annual_sunshine_hours=solar_potential["maxSunshineHoursPerYear"],
                 carbon_offset_factor_kg_mwh=solar_potential["carbonOffsetFactorKgPerMwh"],
                 roof_segments=segments,
+                panel_capacity_watts=solar_potential.get("panelCapacityWatts"),
+                panel_width_meters=solar_potential.get("panelWidthMeters"),
+                panel_height_meters=solar_potential.get("panelHeightMeters"),
+                panel_configs=_to_panel_configs(solar_potential.get("solarPanelConfigs")),
             )
         except (KeyError, TypeError) as exc:
             raise GoogleUpstreamException(
                 "Resposta da Solar API do Google em formato inesperado", capability="solar"
             ) from exc
+
+
+def _to_panel_configs(raw_configs: Any) -> list[SolarPanelConfig]:
+    """Traduz `solarPanelConfigs` do Google, descartando entradas malformadas
+
+    Args:
+        raw_configs: lista de `solarPanelConfigs` do payload do Google, ou `None`
+
+    Returns:
+        As configurações válidas; itens sem `panelsCount` ou `yearlyEnergyDcKwh` são ignorados
+    """
+    if not isinstance(raw_configs, list):
+        return []
+
+    configs: list[SolarPanelConfig] = []
+    for raw in raw_configs:
+        if not isinstance(raw, dict) or "panelsCount" not in raw or "yearlyEnergyDcKwh" not in raw:
+            continue
+        try:
+            configs.append(
+                SolarPanelConfig(panels_count=raw["panelsCount"], yearly_energy_dc_kwh=raw["yearlyEnergyDcKwh"])
+            )
+        except ValidationError:
+            continue
+    return configs
 
 
 def _format_imagery_date(imagery_date: dict[str, int]) -> str:

@@ -11,8 +11,8 @@ Este repositório é Python (FastAPI). O fluxo local padrão: clonar, instalar d
 ## Possíveis Impedimentos
 
 - **Python 3.14+ instalado localmente** (`pyproject.toml`, `requires-python = ">=3.14"`).
-- **Chaves de API do Google**, o `.env.example` lista `GOOGLE_KEY_MAPS`/`GOOGLE_KEY_TRANSLATION`/`GOOGLE_CALENDAR_OAUTH_*` vazias — em produção elas vêm do [Infisical](https://infisical.com), localmente precisam ser preenchidas num `.env` próprio.
-- **`api-core` e `api-auth` rodando** (ou apontados via `PERSISTENCE_BASE_URL`/`AUTH_BASE_URL`), já que várias capabilities gravam resultado em `api-core` e a autenticação valida contra o JWKS do `api-auth`.
+- **Chaves de API**, o `.env.example` lista `GOOGLE_KEY_MAPS`/`GOOGLE_KEY_TRANSLATION`/`GOOGLE_CALENDAR_OAUTH_*` e as chaves de LLM (`GEMINI_API_KEY_1`, `GROQ_API_KEY_1`...) vazias — em produção elas vêm do [Infisical](https://infisical.com), localmente precisam ser preenchidas num `.env` próprio. As chaves de LLM são opcionais: sem elas `GET /v1/llm/keys` responde 404.
+- **`api-auth` rodando** (ou apontado via `AUTH_BASE_URL`/`JWT_JWKS_URL`) só quando a autenticação e o Calendar forem usados; nenhuma capability atual grava em outro serviço.
 
 ## Instalação do Projeto
 

@@ -107,7 +107,7 @@ class CalendarTokenRevokedException(GoogleProviderException):
 
 
 class InternalServiceException(Exception):
-    """Exceção base de erro ao chamar um serviço interno Solier (api-persistence/api-auth)"""
+    """Exceção base de erro ao chamar um serviço interno Solier (api-auth)"""
 
     http_status: int = 502
     #: Valor de `error.type` nas métricas desta exception
@@ -156,3 +156,44 @@ class InternalServiceUpstreamException(InternalServiceException):
 
     http_status = 502
     error_type = "upstream"
+
+
+class LlmKeyException(Exception):
+    """Exceção base de erro ao entregar ou registrar chaves de LLM"""
+
+    http_status: int = 500
+    error_type: str = "llm_key_error"
+
+    def __init__(self, message: str, *, retry_after_seconds: int | None = None) -> None:
+        super().__init__(message)
+        self.retry_after_seconds = retry_after_seconds
+
+    def details(self) -> dict[str, Any] | None:
+        """Detalhes opcionais incluídos no corpo da resposta de erro"""
+        return None
+
+
+class LlmKeysNotConfiguredException(LlmKeyException):
+    """Nenhuma chave configurada para o provedor/uso pedido"""
+
+    http_status = 404
+    error_type = "keys_not_configured"
+
+
+class LlmKeysUnavailableException(LlmKeyException):
+    """Há chaves configuradas, mas nenhuma disponível agora (em descanso ou inválidas)"""
+
+    http_status = 503
+    error_type = "keys_unavailable"
+
+    def details(self) -> dict[str, Any] | None:
+        if self.retry_after_seconds is None:
+            return None
+        return {"retry_after_seconds": self.retry_after_seconds}
+
+
+class LlmKeyNotFoundException(LlmKeyException):
+    """Identificador de chave desconhecido"""
+
+    http_status = 404
+    error_type = "key_not_found"

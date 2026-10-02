@@ -10,11 +10,10 @@ from typing import Annotated
 
 from fastapi import Depends, Request
 
+from app.application.llm.key_pool import KeyPool
 from app.infrastructure.http.google_http_client import GoogleHttpClient
 from app.infrastructure.http.internal_http_client import InternalHttpClient
 from app.infrastructure.solier.auth.calendar_token_client import AuthCalendarTokenClient
-from app.infrastructure.solier.persistence.geolocalization_client import GeolocalizationHttpClient
-from app.infrastructure.solier.persistence.unit_client import PersistenceUnitClient
 
 # Uma dependência memorizada por capability
 _http_client_deps: dict[str, Callable[[Request], GoogleHttpClient]] = {}
@@ -43,7 +42,7 @@ def registered_capabilities() -> set[str]:
     return set(_http_client_deps)
 
 
-# Uma dependência memorizada por serviço interno Solier (persistence/auth)
+# Uma dependência memorizada por serviço interno Solier (auth)
 _internal_http_client_deps: dict[str, Callable[[Request], InternalHttpClient]] = {}
 
 
@@ -51,7 +50,7 @@ def get_internal_http_client(service: str) -> Callable[[Request], InternalHttpCl
     """Fábrica de dependência: resolve o `InternalHttpClient` do serviço, criado no lifespan
 
     Args:
-        service: chave usada em `app.main` ("persistence" ou "auth").
+        service: chave usada em `app.main` (hoje só "auth").
 
     Returns:
         Uma dependência FastAPI (a mesma instância a cada chamada com o mesmo `service`)
@@ -77,15 +76,6 @@ def get_calendar_token_client(
     return AuthCalendarTokenClient(http_client)
 
 
-def get_geolocalization_client(
-    http_client: Annotated[InternalHttpClient, Depends(get_internal_http_client("persistence"))],
-) -> GeolocalizationHttpClient:
-    """Cliente do endereço/geolocalização real de um `place_id`, ligado ao `InternalHttpClient` do api-persistence"""
-    return GeolocalizationHttpClient(http_client)
-
-
-def get_persistence_unit_client(
-    http_client: Annotated[InternalHttpClient, Depends(get_internal_http_client("persistence"))],
-) -> PersistenceUnitClient:
-    """Cliente do endereço/perfil solar por unidade, ligado ao `InternalHttpClient` do api-persistence"""
-    return PersistenceUnitClient(http_client)
+def get_llm_key_pool(request: Request) -> KeyPool:
+    """Fila de chaves de LLM, criada no lifespan"""
+    return request.app.state.llm_key_pool

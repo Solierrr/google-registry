@@ -46,7 +46,7 @@ def configure_metrics() -> None:
     _internal_requests = meter.create_counter(
         "solier.internal.requests",
         unit="{request}",
-        description="Total de requests para serviços internos Solier (api-persistence/api-auth), por serviço e resultado",
+        description="Total de requests para serviços internos Solier (api-auth), por serviço e resultado",
     )
     _internal_request_duration = meter.create_histogram(
         "solier.internal.request.duration",

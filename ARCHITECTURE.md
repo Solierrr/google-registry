@@ -11,16 +11,19 @@ FastAPI, arquitetura em camadas por capability (`domain` -> `application` -> `in
 ## Camadas
 
 - **`app/domain/<capability>/ports.py`**, contrato (`Protocol`) que a capability espera do provedor Google — nenhum detalhe de HTTP/formato de payload aqui.
-- **`app/application/<capability>/service.py`**, orquestra o port da capability e, quando aplicável, o client de `api-core` para gravar o resultado.
+- **`app/application/<capability>/service.py`**, orquestra os ports da capability. Não grava nada em outros serviços: devolve o resultado a quem chamou.
 - **`app/infrastructure/google/<capability>/adapter.py`**, único lugar que conhece o formato de request/response da API Google real, sobre o `GoogleHttpClient` (`app/infrastructure/http`) compartilhado (timeout, retry/backoff, observabilidade).
-- **`app/infrastructure/solier/{auth,persistence}/*_client.py`**, clientes dos serviços internos Solier (`api-core`/`api-auth`), sobre o `InternalHttpClient` compartilhado, mesma estrutura do `GoogleHttpClient`.
+- **`app/infrastructure/solier/auth/*_client.py`**, cliente do `api-auth` (tokens do Calendar, ainda sem uso), sobre o `InternalHttpClient` compartilhado, mesma estrutura do `GoogleHttpClient`.
 - **`app/api/routers/<capability>.py`**, endpoints FastAPI (`/v1/<capability>/...`), monta o service via `Depends` a partir dos clients criados no lifespan (`app/api/dependencies.py`).
 - **`app/schemas/<capability>.py`**, DTOs públicos (Pydantic) do router.
 
 ## Capabilities
 
-- **`solar`**, viabilidade solar de um telhado (`buildingInsights:findClosest`); com `unit_id`, grava o perfil solar em `api-core`.
-- **`i18n`**, chamado por `api-core` logo após inserir/atualizar um registro cujos campos de texto entram no escopo de tradução automática; detecta o idioma de origem (Cloud Translation API, `detect`) e traduz pros outros dois dos três idiomas suportados (`en`/`es`/`pt`), gravando o resultado numa tabela genérica de traduções em `api-core`.
+- **`address`**, `/v1/address/{suggestions,places/{place_id},geocode,reverse-geocode,validate,resolve}`; três adapters (Places New, Geocoding, Address Validation) atrás de um `AddressService`. `resolve` junta busca e validação; se a validação falhar, o endereço volta com `validation: null`.
+- **`solar`**, `/v1/solar/roof-viability` (`buildingInsights:findClosest`), com os dados do painel de referência do Google.
+- **`i18n`**, `/v1/i18n/translate`; detecta o idioma de origem (Cloud Translation API, `detect`) e traduz os campos para os outros dois dos três idiomas suportados (`en`/`es`/`pt`), um lote por idioma de destino.
+- **`llm`**, `/v1/llm/{keys,keys/{key_id}/report,providers}`; não chama o Google: lê do ambiente as chaves `<PROVEDOR>_API_KEY_<N>` (Gemini e Groq), mantém uma fila FIFO (`application/llm/key_pool.py`) e verifica a validade das chaves em segundo plano (`infrastructure/llm/probe.py`). Estado em memória, uma réplica.
+- **`geo`**, `/v1/geo/timezone`; fuso por coordenada via `tzfpy`, sem API externa.
 
 ## Observabilidade e autenticação
 
@@ -42,7 +45,9 @@ FastAPI, arquitetura em camadas por capability (`domain` -> `application` -> `in
 │   │   ├── google/       # adapters por capability
 │   │   ├── http/         # clients HTTP compartilhados (Google/interno)
 │   │   ├── observability/ # logging/tracing/metrics OTEL
-│   │   └── solier/       # clients dos serviços internos Solier
+│   │   ├── geo/          # fuso horário local
+│   │   ├── llm/          # chaves, provedores e verificação de chaves de LLM
+│   │   └── solier/       # cliente do api-auth
 │   ├── schemas/          # DTOs por capability
 │   ├── config.py
 │   └── main.py
