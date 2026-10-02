@@ -38,6 +38,9 @@ class Settings(BaseSettings):
     jwt_jwks_url: str = "http://localhost:8081/.well-known/jwks.json"
     jwt_issuer: str = "solaria-auth"
 
+    # Token compartilhado dos serviços que consomem /v1/llm/* (ausente: as rotas respondem 503)
+    registry_consumer_token: str | None = Field(None, repr=False)
+
     # repos Solier chamados via HTTP
     auth_base_url: str
 

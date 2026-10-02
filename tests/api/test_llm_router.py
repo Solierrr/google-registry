@@ -4,6 +4,17 @@ import pytest
 
 
 @pytest.fixture
+def client():
+    """Cliente autenticado como consumidor (o lifespan roda ao entrar, depois das chaves definidas pelo teste)"""
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+
+    with TestClient(app, headers={"Authorization": "Bearer test-consumer-token"}) as test_client:
+        yield test_client
+
+
+@pytest.fixture
 def keys_env(monkeypatch):
     monkeypatch.setenv("GEMINI_API_KEY_1", "gem-secret-1")
     monkeypatch.setenv("GEMINI_API_KEY_2", "gem-secret-2")

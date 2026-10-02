@@ -6,10 +6,11 @@ from fastapi import APIRouter, Depends, Query, Response, status
 
 from app.api.dependencies import get_llm_key_pool
 from app.application.llm.key_pool import KeyPool
+from app.infrastructure.auth.consumer_token import require_registry_consumer
 from app.infrastructure.llm.providers import PROVIDERS
 from app.schemas.llm import AuthHeader, KeyLease, ProvidersResponse, ReportRequest
 
-router = APIRouter(prefix="/v1/llm", tags=["llm"])
+router = APIRouter(prefix="/v1/llm", tags=["llm"], dependencies=[Depends(require_registry_consumer)])
 
 
 @router.get("/keys", summary="Entrega uma chave de LLM disponível")
