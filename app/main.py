@@ -14,7 +14,7 @@ from typing import AsyncIterator
 
 from fastapi import FastAPI
 
-from app.api.routers import address, i18n, llm, solar
+from app.api.routers import address, geo, i18n, llm, solar
 from app.application.llm.key_pool import KeyPool
 from app.config import get_llm_environ, get_settings
 from app.exceptions.handlers import register_exception_handlers
@@ -82,6 +82,7 @@ register_exception_handlers(app)
 
 app.include_router(address.router)
 app.include_router(solar.router)
+app.include_router(geo.router)
 app.include_router(i18n.router)
 app.include_router(llm.router)
 
