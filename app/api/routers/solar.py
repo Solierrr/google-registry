@@ -7,11 +7,12 @@ from fastapi import APIRouter, Depends, Query
 from app.api.dependencies import get_http_client
 from app.application.solar.service import SolarService
 from app.config import get_settings
+from app.infrastructure.auth.consumer_token import require_registry_consumer
 from app.infrastructure.google.solar.adapter import SolarAdapter
 from app.infrastructure.http.google_http_client import GoogleHttpClient
 from app.schemas.solar import SolarViability
 
-router = APIRouter(prefix="/v1/solar", tags=["solar"])
+router = APIRouter(prefix="/v1/solar", tags=["solar"], dependencies=[Depends(require_registry_consumer)])
 
 
 def _get_service(

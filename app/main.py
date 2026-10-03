@@ -90,6 +90,7 @@ register_exception_handlers(app)
 
 app.include_router(address.router)
 app.include_router(calendar.router)
+app.include_router(calendar.public_router)
 app.include_router(solar.router)
 app.include_router(geo.router)
 app.include_router(i18n.router)

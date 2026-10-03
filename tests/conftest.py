@@ -49,7 +49,21 @@ def _no_retry_backoff(monkeypatch):
 
 @pytest.fixture
 def client():
-    """Cliente HTTP de teste da aplicação FastAPI (roda o lifespan, sem I/O real na criação dos clients)"""
+    """Cliente HTTP de teste da aplicação FastAPI, já autenticado com o token de consumidor
+
+    Roda o lifespan, sem I/O real na criação dos clients
+    """
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+
+    with TestClient(app, headers={"Authorization": "Bearer test-consumer-token"}) as test_client:
+        yield test_client
+
+
+@pytest.fixture
+def anonymous_client():
+    """Cliente HTTP de teste sem nenhuma credencial"""
     from fastapi.testclient import TestClient
 
     from app.main import app

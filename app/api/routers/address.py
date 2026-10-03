@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, Query
 from app.api.dependencies import get_http_client
 from app.application.address.service import AddressService
 from app.config import get_settings
+from app.infrastructure.auth.consumer_token import require_registry_consumer
 from app.infrastructure.google.address_validation.adapter import AddressValidationAdapter
 from app.infrastructure.google.geocoding.adapter import GeocodingAdapter
 from app.infrastructure.google.places.adapter import PlacesAdapter
@@ -24,7 +25,7 @@ from app.schemas.address import (
     ValidateResponse,
 )
 
-router = APIRouter(prefix="/v1/address", tags=["address"])
+router = APIRouter(prefix="/v1/address", tags=["address"], dependencies=[Depends(require_registry_consumer)])
 
 
 def _get_service(

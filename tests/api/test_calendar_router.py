@@ -54,7 +54,7 @@ def test_calendar_is_503_when_the_oauth_is_not_configured(monkeypatch, variable)
     from app.main import app
 
     monkeypatch.delenv(variable)
-    with TestClient(app) as unconfigured:
+    with TestClient(app, headers={"Authorization": "Bearer test-consumer-token"}) as unconfigured:
         response = unconfigured.get("/v1/calendar/connect", params={"technician_id": "tec-1"})
 
     assert response.status_code == 503
