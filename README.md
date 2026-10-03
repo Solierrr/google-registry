@@ -35,7 +35,7 @@ O `google-registry` é o serviço central de integração com APIs do Google da 
 - **Capability `i18n`**, detecção de idioma + tradução (Cloud Translation API) de campos de texto para os outros dois entre `en`/`es`/`pt`.
 - **Capability `llm`**, corretor de chaves de modelos (Gemini, Groq): entrega uma chave em rodízio FIFO, aceita aviso de limite de uso/chave inválida e verifica a validade em segundo plano.
 - **Capability `geo`**, fuso horário por coordenada, calculado localmente.
-- **Autenticação**, JWT RS256 de usuário validado via JWKS do `api-auth` (`app/infrastructure/auth`); ainda não aplicado nos endpoints.
+- **Autenticação**, todas as rotas `/v1/**` exigem `Authorization: Bearer <REGISTRY_CONSUMER_TOKEN>` (token compartilhado dos serviços consumidores); só `/health` e o `callback` do Calendar (protegido pelo `state` assinado) são abertos. O JWT RS256 de usuário (JWKS do `api-auth`, `app/infrastructure/auth`) está pronto, mas nenhum endpoint o usa hoje.
 - **Observabilidade**, logging/tracing/metrics via OpenTelemetry.
 - **Licença Apache 2.0**.
 
