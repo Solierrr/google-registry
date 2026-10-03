@@ -6,10 +6,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.application.geo.service import GeoService
+from app.infrastructure.auth.consumer_token import require_registry_consumer
 from app.infrastructure.geo.timezone import TzfpyTimezoneFinder
 from app.schemas.geo import TimezoneResponse
 
-router = APIRouter(prefix="/v1/geo", tags=["geo"])
+router = APIRouter(prefix="/v1/geo", tags=["geo"], dependencies=[Depends(require_registry_consumer)])
 
 
 def _get_service() -> GeoService:

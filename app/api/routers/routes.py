@@ -7,11 +7,12 @@ from fastapi import APIRouter, Depends
 from app.api.dependencies import get_http_client
 from app.application.routes.service import RoutesService
 from app.config import get_settings
+from app.infrastructure.auth.consumer_token import require_registry_consumer
 from app.infrastructure.google.routes.adapter import RoutesAdapter
 from app.infrastructure.http.google_http_client import GoogleHttpClient
 from app.schemas.routes import RouteRequest, RouteResponse
 
-router = APIRouter(prefix="/v1/routes", tags=["routes"])
+router = APIRouter(prefix="/v1/routes", tags=["routes"], dependencies=[Depends(require_registry_consumer)])
 
 
 def _get_service(

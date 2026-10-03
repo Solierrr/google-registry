@@ -31,6 +31,7 @@ FastAPI, arquitetura em camadas por capability (`domain` -> `application` -> `in
 ## Observabilidade e autenticação
 
 - **OpenTelemetry** (`app/infrastructure/observability`), logging (console + OTLP), tracing (span por chamada Google/interna) e métricas (contador + histograma de duração, por capability/serviço).
+- **Token de consumidor** (`app/infrastructure/auth/consumer_token.py`), todos os routers `/v1/**` (menos `/health` e o `callback` do Calendar) dependem de `require_registry_consumer`: `Authorization: Bearer <REGISTRY_CONSUMER_TOKEN>`, comparado em tempo constante; 401 sem token ou com token errado, 503 se o registry estiver sem o token configurado (nunca libera a rota). O token é único e compartilhado entre os consumidores, sem identidade por serviço.
 - **JWT RS256** (`app/infrastructure/auth`), valida o token de usuário emitido pelo `api-auth` via JWKS — usado pelos endpoints que expõem operações do usuário final (nenhum endpoint hoje declara essa dependency; adicionar via `Depends(require_authenticated_user)` quando fizer sentido).
 
 ## Containerização

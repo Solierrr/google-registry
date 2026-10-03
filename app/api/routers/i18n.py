@@ -7,11 +7,12 @@ from fastapi import APIRouter, Depends
 from app.api.dependencies import get_http_client
 from app.application.i18n.service import TranslationService
 from app.config import get_settings
+from app.infrastructure.auth.consumer_token import require_registry_consumer
 from app.infrastructure.google.translation.adapter import TranslationAdapter
 from app.infrastructure.http.google_http_client import GoogleHttpClient
 from app.schemas.i18n import TranslateRequest, TranslateResponse
 
-router = APIRouter(prefix="/v1/i18n", tags=["i18n"])
+router = APIRouter(prefix="/v1/i18n", tags=["i18n"], dependencies=[Depends(require_registry_consumer)])
 
 
 def _get_service(

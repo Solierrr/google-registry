@@ -8,11 +8,12 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from app.api.dependencies import get_http_client
 from app.application.weather.service import ForecastWindowError, WeatherService
 from app.config import get_settings
+from app.infrastructure.auth.consumer_token import require_registry_consumer
 from app.infrastructure.google.weather.adapter import WeatherAdapter
 from app.infrastructure.http.google_http_client import GoogleHttpClient
 from app.schemas.weather import HourlyWeather
 
-router = APIRouter(prefix="/v1/weather", tags=["weather"])
+router = APIRouter(prefix="/v1/weather", tags=["weather"], dependencies=[Depends(require_registry_consumer)])
 
 
 def _get_service(

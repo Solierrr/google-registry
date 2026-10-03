@@ -24,8 +24,8 @@ def _bearer(token: str) -> dict[str, str]:
         ("get", "/v1/llm/providers"),
     ],
 )
-def test_llm_routes_reject_a_missing_token(keys_env, client, method, path):
-    response = getattr(client, method)(path)
+def test_llm_routes_reject_a_missing_token(keys_env, anonymous_client, method, path):
+    response = getattr(anonymous_client, method)(path)
 
     assert response.status_code == 401
     assert "groq-secret-1" not in response.text
@@ -46,8 +46,8 @@ def test_llm_routes_accept_the_consumer_token(keys_env, client):
     assert response.json()["api_key"] == "groq-secret-1"
 
 
-def test_unauthorized_response_asks_for_bearer(keys_env, client):
-    response = client.get("/v1/llm/keys")
+def test_unauthorized_response_asks_for_bearer(keys_env, anonymous_client):
+    response = anonymous_client.get("/v1/llm/keys")
 
     assert response.headers["WWW-Authenticate"] == "Bearer"
 
@@ -69,8 +69,3 @@ def test_llm_routes_fail_closed_when_the_token_is_blank(keys_env, client, monkey
     response = client.get("/v1/llm/keys", headers=_bearer("   "))
 
     assert response.status_code == 503
-
-
-def test_other_routes_do_not_require_the_consumer_token(client):
-    assert client.get("/health").status_code == 200
-    assert client.get("/v1/geo/timezone", params={"lat": -23.55, "lng": -46.63}).status_code != 401
