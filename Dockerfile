@@ -1,4 +1,4 @@
-FROM python:latest
+FROM python:3.14
 
 WORKDIR /app
 
@@ -7,10 +7,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certifi
     && apt-get update && apt-get install -y infisical \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-COPY pyproject.toml .
-COPY app ./app
+COPY requirements.lock .
+RUN pip install --no-cache-dir --only-binary=:all: --require-hashes -r requirements.lock
 
-RUN pip install --no-cache-dir .
+COPY app ./app
 
 COPY entrypoint.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh

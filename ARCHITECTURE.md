@@ -32,7 +32,7 @@ FastAPI, arquitetura em camadas por capability (`domain` -> `application` -> `in
 
 ## Containerização
 
-- `Dockerfile` instala a partir de `pyproject.toml` (`pip install .`) e sobe `uvicorn app.main:app` na porta `8000`.
+- `Dockerfile` instala a partir de `requirements.lock` (versões e hashes travados, gerados por `uv pip compile --generate-hashes` a partir de `requirements.txt`) e sobe `uvicorn app.main:app` na porta `8000`.
 
 ```Tree do Repositório
 ├── app/
@@ -54,5 +54,8 @@ FastAPI, arquitetura em camadas por capability (`domain` -> `application` -> `in
 ├── tests/
 ├── Dockerfile
 ├── pyproject.toml
+├── requirements.txt
+├── requirements.lock
+├── requirements.dev.txt
 └── sonar-project.properties
 ```

@@ -10,7 +10,7 @@ Este repositório é Python (FastAPI). O fluxo local padrão: clonar, instalar d
 
 ## Possíveis Impedimentos
 
-- **Python 3.14+ instalado localmente** (`pyproject.toml`, `requires-python = ">=3.14"`).
+- **Python 3.14 instalado localmente**, a mesma versão do `Dockerfile` e do CI.
 - **Chaves de API**, o `.env.example` lista `GOOGLE_KEY_MAPS`/`GOOGLE_KEY_TRANSLATION`/`GOOGLE_CALENDAR_OAUTH_*` e as chaves de LLM (`GEMINI_API_KEY_1`, `GROQ_API_KEY_1`...) vazias — em produção elas vêm do [Infisical](https://infisical.com), localmente precisam ser preenchidas num `.env` próprio. As chaves de LLM são opcionais: sem elas `GET /v1/llm/keys` responde 404. As rotas `/v1/llm/*` exigem `Authorization: Bearer <REGISTRY_CONSUMER_TOKEN>`; sem a variável configurada respondem 503.
 - **`api-auth` rodando** (ou apontado via `AUTH_BASE_URL`/`JWT_JWKS_URL`) só quando a autenticação e o Calendar forem usados; nenhuma capability atual grava em outro serviço.
 
@@ -41,7 +41,7 @@ code . -r
 ```Comandos para instalação e start local
 python -m venv .venv
 .venv\Scripts\activate
-pip install -e ".[dev]"
+pip install -r requirements.dev.txt
 
 copy .env.example .env
 :: preencher as chaves do .env antes de rodar
