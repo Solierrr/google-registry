@@ -7,8 +7,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certifi
     && apt-get update && apt-get install -y infisical \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.lock .
+RUN pip install --no-cache-dir --only-binary=:all: --require-hashes -r requirements.lock
 
 COPY app ./app
 
