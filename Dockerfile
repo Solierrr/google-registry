@@ -7,10 +7,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certifi
     && apt-get update && apt-get install -y infisical \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-COPY pyproject.toml .
-COPY app ./app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN pip install --no-cache-dir .
+COPY app ./app
 
 COPY entrypoint.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh
