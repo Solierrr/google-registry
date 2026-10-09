@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/Solierrr/google-registry/compare/v0.3.0...v0.4.0) (2026-10-09)
+
+
+### Features
+
+* add the local run commands ([068088a](https://github.com/Solierrr/google-registry/commit/068088a8851bfc27cf0bc09e7cf5a33816973e0d))
+
 ## [0.3.0](https://github.com/Solierrr/google-registry/compare/v0.2.0...v0.3.0) (2026-10-02)
 
 
